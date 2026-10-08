@@ -312,13 +312,17 @@ function renderReading() {
     .map(([k, v]) => `<tr><td>${k}</td><td>${fmt(v, 3)}</td></tr>`).join('');
 
   reading.innerHTML = `
-    ${isSample ? '<div><span class="badge">예시 · 여러 얼굴의 평균 윤곽</span></div>' : ''}
+    <div><span class="badge${isSample ? '' : ' mine'}">${isSample ? '예시 · 여러 얼굴의 평균 윤곽 · 사진을 올리면 바뀝니다' : '내 사진 분석 결과 · ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span></div>
     ${warnings.map(w => `<p class="warn">${esc(w)}</p>`).join('')}
     <div class="verdict">
       <h2><em>${face.primary.name}</em> ${face.primary.hanja} · ${esc(face.primary.shape)}</h2>
       <p class="summary">${esc(summary)}</p>
       <p class="facetext">${esc(face.primary.text)}</p>
       <div class="elements" aria-label="오행형 근접도">${elements}</div>
+    </div>
+    <div class="standouts">
+      <h3>가장 두드러진 특징</h3>
+      <ol>${result.standouts.map(f => `<li><span class="palace">${esc(f.hanja)}</span> <b>${esc(f.band.tag)}</b><span>${esc(f.band.text)}</span></li>`).join('')}</ol>
     </div>
     ${groupHtml}
     <div class="group">
