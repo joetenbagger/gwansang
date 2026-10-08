@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>관상 풀이</title>
+<title>관상과 사주</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -15,6 +15,8 @@
   --seal: #B3301C;
   --seal-soft: #F5E1DC;
   --guide: #2F5FA8;
+  --wood: #2E7D4F; --fire: #C2412D; --earth: #A86F12; --metal: #6E7685; --water: #24477A;
+  --good: #2E7D4F; --good-soft: #E1F0E7;
   --display: "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
   --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -23,12 +25,16 @@
   :root:not([data-theme="light"]) {
     --paper: #0E1320; --surface: #161D2D; --ink: #E3E6EE; --muted: #97A0B6;
     --line: #2A3349; --seal: #E2694C; --seal-soft: #3B231F; --guide: #7FA6E8;
+    --wood: #5BC28A; --fire: #F07A5F; --earth: #E0AE4F; --metal: #B9C0CC; --water: #7FA6E8;
+    --good: #5BC28A; --good-soft: #1C3328;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #0E1320; --surface: #161D2D; --ink: #E3E6EE; --muted: #97A0B6;
   --line: #2A3349; --seal: #E2694C; --seal-soft: #3B231F; --guide: #7FA6E8;
+  --wood: #5BC28A; --fire: #F07A5F; --earth: #E0AE4F; --metal: #B9C0CC; --water: #7FA6E8;
+  --good: #5BC28A; --good-soft: #1C3328;
   color-scheme: dark;
 }
 
@@ -37,6 +43,7 @@
 body {
   background: var(--paper); color: var(--ink);
   font: 15px/1.65 var(--body);
+  word-break: keep-all; overflow-wrap: anywhere;
   padding-inline: 16px; padding-block: 28px 56px;
 }
 .wrap { max-width: 1120px; margin-inline: auto; display: grid; gap: 28px; }
@@ -55,7 +62,7 @@ header p { margin: 2px 0 0; color: var(--muted); max-width: 52ch; }
 .grid { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 28px; align-items: start; }
 @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
 
-.left { display: grid; gap: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+.left { display: grid; gap: 14px; }
 @media (max-width: 860px) { .left { position: static; } }
 
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
@@ -154,69 +161,275 @@ th { color: var(--muted); font-weight: 500; }
 footer { color: var(--muted); font-size: 12.5px; max-width: 80ch; display: grid; gap: 4px; }
 footer p { margin: 0; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- 오행 색 ---------- */
+[data-el="wood"] { --e: var(--wood); } [data-el="fire"] { --e: var(--fire); } [data-el="earth"] { --e: var(--earth); }
+[data-el="metal"] { --e: var(--metal); } [data-el="water"] { --e: var(--water); }
+
+.seal { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.seal span { writing-mode: horizontal-tb; font-size: 20px; }
+
+/* ---------- 입력 폼 ---------- */
+form.panel { display: grid; gap: 14px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > label, .field > .lbl { font-size: 13px; font-weight: 600; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row > * { min-width: 0; }
+input[type="text"], input[type="number"], input[type="time"], select {
+  font: 15px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line);
+  border-radius: 6px; padding: 9px 10px; min-height: 42px; width: 100%;
+}
+input:focus-visible, select:focus-visible { outline: 2px solid var(--guide); outline-offset: 1px; }
+.ymd { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 8px; }
+.ymd label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.segctl { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.segctl label { position: relative; }
+.segctl input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.segctl span { display: block; padding: 9px 14px; font-size: 14px; cursor: pointer; }
+.segctl input:checked + span { background: var(--ink); color: var(--surface); }
+.segctl input:focus-visible + span { outline: 2px solid var(--guide); outline-offset: -2px; }
+.check { display: inline-flex; gap: 6px; align-items: center; font-size: 13.5px; }
+.check input { width: 17px; height: 17px; accent-color: var(--seal); }
+details.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details.adv .field { margin-top: 10px; }
+.submit { display: flex; gap: 8px; flex-wrap: wrap; }
+.submit .btn { flex: 1 1 auto; }
+.btn.big { font-size: 16px; padding: 14px 18px; }
+.photo { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
+.photo h2 { margin: 0; font: 800 17px/1.3 var(--display); }
+.photo small { color: var(--muted); font-size: 12.5px; }
+.photoDone { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 12px; align-items: center; }
+.photoDone canvas { width: 88px; height: auto; border-radius: 6px; display: block; }
+.photoDone p { margin: 0 0 6px; font-size: 13.5px; }
+
+/* ---------- 결과 ---------- */
+.result-head { display: grid; gap: 12px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button { font: 600 15px var(--body); background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); padding: 10px 14px; cursor: pointer; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--seal); }
+.tabs button[disabled] { opacity: .45; cursor: not-allowed; }
+.tabs button:focus-visible { outline: 2px solid var(--guide); outline-offset: -2px; }
+.tabpanel { display: grid; gap: 26px; min-width: 0; }
+.block { display: grid; gap: 8px; min-width: 0; }
+.block > h3 { margin: 0; font: 800 20px/1.3 var(--display); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.block > h3 small { font: 400 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
+.block > p { margin: 0; max-width: 64ch; }
+.fine { font-size: 12.5px; color: var(--muted); margin: 0; max-width: 72ch; }
+.hint { margin: 0; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; font-size: 14px; color: var(--muted); }
+.pill { display: inline-block; font: 600 11.5px/1 var(--body); padding: 4px 8px; border-radius: 999px; border: 1px solid currentColor; vertical-align: 2px; }
+.pill.good { color: var(--good); background: var(--good-soft); }
+.pill.bad { color: var(--seal); background: var(--seal-soft); }
+.pill.neutral { color: var(--muted); }
+.mtitle { margin: 0; }
+.match { padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+
+table.pillars { font-family: var(--body); text-align: center; min-width: 360px; }
+table.pillars th, table.pillars td { text-align: center; padding: 6px 4px; }
+table.pillars thead th { font-size: 13px; color: var(--ink); font-weight: 600; }
+table.pillars thead th small { display: block; font: 400 11px var(--mono); color: var(--muted); }
+table.pillars tbody th { font-size: 11.5px; color: var(--muted); font-weight: 500; text-align: left; width: 48px; }
+table.pillars .god { font-size: 12.5px; color: var(--muted); }
+table.pillars .glyph { padding-block: 8px; }
+table.pillars .glyph .hz { display: block; font: 800 34px/1.1 var(--display); color: var(--e); }
+table.pillars .glyph .kr { display: block; font-size: 12px; color: var(--muted); }
+table.pillars .glyph.me { background: var(--seal-soft); border-radius: 6px; }
+table.pillars .hidden span { font: 600 14px var(--display); color: var(--e); margin: 0 2px; }
+table.pillars .unknown { font: 800 26px var(--display); color: var(--line); }
+
+.dm { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; }
+.dm .hz { font: 800 56px/1 var(--display); color: var(--e); width: 72px; height: 72px; display: grid; place-items: center; border: 2px solid var(--e); border-radius: 10px; }
+.dm p { margin: 4px 0 0; max-width: 62ch; }
+
+.ohaeng { display: grid; gap: 8px; }
+.oh { display: grid; grid-template-columns: 58px minmax(0, 1fr) 84px 36px; gap: 10px; align-items: center; font-size: 13px; }
+.oh .nm { font: 700 14px var(--display); color: var(--e); }
+.oh .bar, .godrow .bar { height: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+.oh .bar b { display: block; height: 100%; background: var(--e); }
+.oh .num { font: 12px var(--mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.oh .flag { font-size: 12px; font-weight: 600; color: var(--seal); }
+
+.meter .track { position: relative; height: 26px; }
+.meter .zone { position: absolute; top: 10px; height: 6px; background: var(--line); }
+.meter .zone.mid { background: var(--muted); opacity: .45; }
+.meter .dot { position: absolute; top: 5px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--seal); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--seal); }
+.meter .labels { display: flex; justify-content: space-between; font: 12px var(--mono); color: var(--muted); }
+
+.elchip { display: inline-block; font: 700 13px/1 var(--display); color: var(--e); border: 1.5px solid var(--e); border-radius: 5px; padding: 4px 7px; }
+.yong { display: flex; gap: 10px; flex-wrap: wrap; }
+.yong > div { display: grid; gap: 4px; justify-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-width: 120px; flex: 1 1 120px; }
+.yong .lbl, .lucky .lbl { font-size: 12px; color: var(--muted); }
+.yong .sub { font-size: 12px; color: var(--muted); }
+
+.gods { display: grid; gap: 14px; }
+.godrow { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.godhead { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.godhead b { font: 800 17px var(--display); }
+.godhead small { font: 12px var(--mono); color: var(--muted); }
+.godhead .lvl { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.godrow[data-level="high"] .lvl { color: var(--seal); }
+.godrow .bar b { display: block; height: 100%; background: var(--ink); }
+.godrow p { margin: 0; max-width: 62ch; }
+.godrow .role { font-size: 12.5px; color: var(--muted); }
+
+.sals { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.sal { padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.sal > b { font: 800 16px var(--display); margin-right: 6px; }
+.sal small { font: 12px var(--mono); color: var(--muted); }
+.sal p { margin: 4px 0 0; font-size: 14px; }
+.rel { display: grid; gap: 4px; justify-items: start; }
+.rel p { margin: 0; font-size: 14px; max-width: 62ch; }
+
+.strip { overflow-x: auto; padding-bottom: 6px; }
+.strip ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; }
+.dy { flex: 0 0 82px; display: grid; justify-items: center; gap: 3px; padding: 10px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); position: relative; }
+.dy.now { border: 2px solid var(--seal); }
+.dy .age { font: 12px var(--mono); color: var(--muted); }
+.dy .gz { display: grid; font: 800 24px/1.05 var(--display); text-align: center; }
+.dy .gz b { color: var(--e); }
+.dy .kr { font-size: 12px; color: var(--muted); }
+.dy .god { font-size: 12.5px; font-weight: 600; }
+.dy .nowtag { position: absolute; top: -9px; font: 600 10.5px/1 var(--body); background: var(--seal); color: var(--surface); padding: 3px 6px; border-radius: 3px; }
+.callout { padding: 12px 14px; border-left: 3px solid var(--seal); background: var(--surface); border-radius: 0 8px 8px 0; }
+.callout h4 { margin: 0 0 4px; font-size: 15px; }
+.callout p { margin: 0; font-size: 14.5px; }
+
+.years { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.yearcard { padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.yhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.yhead b { font: 800 17px var(--display); }
+.yearcard p { margin: 6px 0 0; font-size: 14.5px; }
+
+.warnbox ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 64ch; }
+.lucky { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); gap: 8px; }
+.lucky > div { display: grid; gap: 3px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+.lucky > div:first-child b { color: var(--e); }
+.lg-guide { background: var(--guide); }
+.lg-seal { background: var(--seal); }
 </style>
 
 <div class="wrap">
   <header>
-    <div class="seal" aria-hidden="true"><span>觀</span><span>相</span></div>
+    <div class="seal" aria-hidden="true"><span>觀</span><span>相</span><span>四</span><span>柱</span></div>
     <div>
-      <h1>관상 풀이</h1>
-      <p>정면 얼굴 사진 한 장으로 얼굴 비율을 재고, 고전 상법의 기준에 따라 풀이합니다.</p>
+      <h1>관상과 사주</h1>
+      <p>생년월일시로 사주팔자를 세우고, 얼굴 사진이 있으면 관상까지 엮어 풀이합니다. 좋은 점과 조심할 점을 함께 알려 드립니다.</p>
     </div>
   </header>
 
   <div class="grid">
-    <section class="left" aria-label="사진">
-      <div class="panel">
-        <label class="consent" for="consent">
-          <input type="checkbox" id="consent">
-          <span><b>사진 분석에 동의합니다.</b> 사진은 이 기기의 브라우저 안에서만 분석되며 서버로 전송하거나 저장하지 않습니다. 페이지를 닫으면 사라집니다.</span>
-        </label>
-        <div class="drop locked" id="drop">
-          <div class="row-actions">
-            <button class="btn" id="pick" type="button" disabled>사진 업로드</button>
-            <button class="btn" id="shoot" type="button" disabled>사진 촬영</button>
+    <section class="left" aria-label="입력">
+      <form class="panel" id="birthForm" novalidate>
+        <div class="field">
+          <label for="name">이름 <span class="fine">(선택)</span></label>
+          <input type="text" id="name" name="name" maxlength="20" autocomplete="off" placeholder="결과에 표시할 이름">
+        </div>
+        <div class="row">
+          <div class="field">
+            <span class="lbl">성별</span>
+            <div class="segctl" role="radiogroup" aria-label="성별">
+              <label><input type="radio" name="gender" value="M" id="gM" checked><span>남</span></label>
+              <label><input type="radio" name="gender" value="F" id="gF"><span>여</span></label>
+            </div>
           </div>
-          <small id="dropHint">동의하면 사진을 올리거나 바로 찍을 수 있습니다.</small>
+          <div class="field">
+            <span class="lbl">달력</span>
+            <div class="segctl" role="radiogroup" aria-label="달력">
+              <label><input type="radio" name="calendar" value="solar" id="calS" checked><span>양력</span></label>
+              <label><input type="radio" name="calendar" value="lunar" id="calL"><span>음력</span></label>
+            </div>
+          </div>
+          <label class="check" id="leapWrap" hidden><input type="checkbox" id="leap" name="leap"> 윤달</label>
+        </div>
+        <div class="field">
+          <span class="lbl">생년월일</span>
+          <div class="ymd">
+            <label>년<input type="number" id="year" name="year" inputmode="numeric" min="1910" max="2100" placeholder="1990"></label>
+            <label>월<input type="number" id="month" name="month" inputmode="numeric" min="1" max="12" placeholder="5"></label>
+            <label>일<input type="number" id="day" name="day" inputmode="numeric" min="1" max="31" placeholder="15"></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="time">태어난 시각</label>
+          <div class="row">
+            <input type="time" id="time" name="time" style="flex: 1 1 140px">
+            <label class="check"><input type="checkbox" id="timeUnknown" name="timeUnknown"> 모름</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="place">태어난 곳</label>
+          <select id="place" name="place"></select>
+          <span class="fine">태어난 곳의 경도로 실제 해의 시각을 보정합니다(서울은 시계보다 약 32분 늦음).</span>
+        </div>
+        <details class="adv">
+          <summary>세부 설정</summary>
+          <div class="field">
+            <label for="ziMode">밤 11시~자정 사이 출생</label>
+            <select id="ziMode" name="ziMode">
+              <option value="split">다음 날 일주로 봄 (전통 방식)</option>
+              <option value="same">당일 일주로 봄 (야자시 방식)</option>
+            </select>
+          </div>
+        </details>
+
+        <div class="photo">
+          <h2>얼굴 사진 <span class="fine">(선택)</span></h2>
+          <label class="consent" for="consent">
+            <input type="checkbox" id="consent">
+            <span><b>사진 분석에 동의합니다.</b> 사진은 이 기기의 브라우저 안에서만 분석되며 서버로 보내거나 저장하지 않습니다.</span>
+          </label>
+          <div class="row">
+            <button class="btn ghost" id="pick" type="button" disabled>사진 업로드</button>
+            <button class="btn ghost" id="shoot" type="button" disabled>사진 촬영</button>
+          </div>
+          <small id="photoHint">동의하면 사진을 올리거나 바로 찍을 수 있습니다. 사진 없이 사주만 봐도 됩니다.</small>
           <input type="file" id="photo" accept="image/*" hidden>
           <input type="file" id="cameraInput" accept="image/*" capture="user" hidden>
-        </div>
-      </div>
-
-      <div class="panel stage">
-        <canvas id="view" width="400" height="420" aria-label="측정선이 표시된 얼굴"></canvas>
-        <div class="cam" id="cam" hidden>
-          <div class="cam-frame">
-            <video id="camVideo" playsinline muted></video>
-            <svg class="cam-guide" viewBox="0 0 100 105" preserveAspectRatio="none" aria-hidden="true">
-              <ellipse cx="50" cy="50" rx="27" ry="36" fill="none" stroke-width="0.8" stroke-dasharray="3 2"></ellipse>
-            </svg>
+          <div class="cam" id="cam" hidden>
+            <div class="cam-frame">
+              <video id="camVideo" playsinline muted></video>
+              <svg class="cam-guide" viewBox="0 0 100 105" preserveAspectRatio="none" aria-hidden="true">
+                <ellipse cx="50" cy="50" rx="27" ry="36" fill="none" stroke-width="0.8" stroke-dasharray="3 2"></ellipse>
+              </svg>
+            </div>
+            <p class="cam-tip">얼굴을 점선 안에 맞추고 정면을 봐 주세요.</p>
+            <div class="row">
+              <button class="btn" id="snap" type="button">찍기</button>
+              <button class="btn ghost" id="camCancel" type="button">취소</button>
+            </div>
           </div>
-          <p class="cam-tip">얼굴을 점선 안에 맞추고 정면을 봐 주세요. 무표정이 가장 정확합니다.</p>
-          <div class="row-actions">
-            <button class="btn" id="snap" type="button">찍기</button>
-            <button class="btn ghost" id="camCancel" type="button">취소</button>
+          <div class="photoDone" id="photoDone" hidden>
+            <canvas id="thumb" width="800" height="840" aria-label="분석한 얼굴"></canvas>
+            <div><p id="photoDoneText"></p><button class="btn ghost" id="removePhoto" type="button">사진 빼기</button></div>
           </div>
         </div>
-        <div class="legend">
-          <span><i style="background: var(--guide)"></i>삼정 기준선</span>
-          <span><i style="background: var(--seal)"></i>이목구비 윤곽</span>
-        </div>
-      </div>
 
-      <p class="status" id="status" role="status"></p>
-      <div class="row-actions" id="actions" hidden>
-        <button class="btn ghost" id="reset" type="button">사진 지우기</button>
-      </div>
+        <div class="submit">
+          <button class="btn big" type="submit">풀이 보기</button>
+          <button class="btn ghost" id="clearForm" type="button">입력 지우기</button>
+        </div>
+        <p class="status" id="status" role="status"></p>
+      </form>
     </section>
 
-    <section class="right" id="reading" aria-live="polite"></section>
+    <section class="right" id="result" aria-label="풀이">
+      <div class="result-head">
+        <div><span class="badge" id="resultBadge">예시</span></div>
+        <div class="tabs" role="tablist" aria-label="풀이 종류">
+          <button role="tab" id="tab-total" data-tab="total" aria-controls="panel-total" aria-selected="true">종합</button>
+          <button role="tab" id="tab-saju" data-tab="saju" aria-controls="panel-saju" aria-selected="false">사주</button>
+          <button role="tab" id="tab-face" data-tab="face" aria-controls="panel-face" aria-selected="false">관상</button>
+        </div>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-total" aria-labelledby="tab-total"></div>
+      <div class="tabpanel" role="tabpanel" id="panel-saju" aria-labelledby="tab-saju" hidden></div>
+      <div class="tabpanel" role="tabpanel" id="panel-face" aria-labelledby="tab-face" hidden></div>
+    </section>
   </div>
 
   <footer>
-    <p>관상은 과학적으로 검증된 방법이 아닙니다. 이 풀이는 재미로만 보시고, 채용·평가 등 사람을 판단하는 데 쓰지 마세요.</p>
-    <p>얼굴 측정: face-api (MIT 라이선스, 68점 랜드마크). 풀이: 마의상법·유장상법 등 고전 상법의 개념을 바탕으로 새로 쓴 문장.</p>
+    <p>관상과 사주는 과학적으로 검증된 방법이 아닙니다. 재미로만 보시고, 채용·평가·건강 등 중요한 판단에 쓰지 마세요.</p>
+    <p>만세력: lunar-javascript (MIT). 얼굴 측정: face-api (MIT). 풀이 문구는 고전 상법·명리학의 일반 개념을 바탕으로 새로 쓴 문장입니다. 입력한 정보는 이 기기에만 저장됩니다.</p>
   </footer>
 </div>
 
-<script type="module" src="js/app.js?v=4"></script>
+<script type="module" src="js/app.js?v=6"></script>
