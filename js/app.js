@@ -1,9 +1,9 @@
 // app.js — 화면(UI) 담당. 얼굴 검출은 detector.js, 측정은 metrics.js, 풀이는 rules.js.
 // 앱으로 옮길 때 이 파일만 플랫폼 UI로 바꾸면 됩니다.
-import { computeMetrics } from './metrics.js';
-import { interpret } from './rules.js';
-import { SAMPLE_FACE, SAMPLE_SIZE } from './sample-face.js';
-import { detectLandmarks } from './detector.js';
+import { computeMetrics } from './metrics.js?v=3';
+import { interpret } from './rules.js?v=3';
+import { SAMPLE_FACE, SAMPLE_SIZE } from './sample-face.js?v=3';
+import { detectLandmarks } from './detector.js?v=3';
 
 const $ = id => document.getElementById(id);
 const consent = $('consent'), pick = $('pick'), shoot = $('shoot'), photo = $('photo'), drop = $('drop');
