@@ -1,9 +1,9 @@
 // app.js — 화면(UI) 담당. 얼굴 검출은 detector.js, 측정은 metrics.js, 풀이는 rules.js.
 // 앱으로 옮길 때 이 파일만 플랫폼 UI로 바꾸면 됩니다.
-import { computeMetrics } from './metrics.js?v=3';
-import { interpret } from './rules.js?v=3';
-import { SAMPLE_FACE, SAMPLE_SIZE } from './sample-face.js?v=3';
-import { detectLandmarks } from './detector.js?v=3';
+import { computeMetrics } from './metrics.js?v=4';
+import { interpret } from './rules.js?v=4';
+import { SAMPLE_FACE, SAMPLE_SIZE } from './sample-face.js?v=4';
+import { detectLandmarks } from './detector.js?v=4';
 
 const $ = id => document.getElementById(id);
 const consent = $('consent'), pick = $('pick'), shoot = $('shoot'), photo = $('photo'), drop = $('drop');
@@ -301,6 +301,7 @@ function renderReading() {
               <span class="tag">${esc(f.band.tag)}</span>
             </div>
             <p>${esc(f.band.text)}</p>
+            <p class="caution"><b>조심할 점</b> ${esc(f.band.caution)}</p>
             <p class="note">${esc(f.note)}</p>
           </div>
           ${gauge(f)}
@@ -318,11 +319,12 @@ function renderReading() {
       <h2><em>${face.primary.name}</em> ${face.primary.hanja} · ${esc(face.primary.shape)}</h2>
       <p class="summary">${esc(summary)}</p>
       <p class="facetext">${esc(face.primary.text)}</p>
+      <p class="caution"><b>조심할 점</b> ${esc(face.primary.caution)}</p>
       <div class="elements" aria-label="오행형 근접도">${elements}</div>
     </div>
     <div class="standouts">
       <h3>가장 두드러진 특징</h3>
-      <ol>${result.standouts.map(f => `<li><span class="palace">${esc(f.hanja)}</span> <b>${esc(f.band.tag)}</b><span>${esc(f.band.text)}</span></li>`).join('')}</ol>
+      <ol>${result.standouts.map(f => `<li><span class="palace">${esc(f.hanja)}</span> <b>${esc(f.band.tag)}</b><span>${esc(f.band.text)}</span><span class="caution"><b>조심할 점</b> ${esc(f.band.caution)}</span></li>`).join('')}</ol>
     </div>
     ${groupHtml}
     <div class="group">
@@ -331,6 +333,7 @@ function renderReading() {
         <div>
           <div class="head"><span class="tag">${esc(symmetry.tag)}</span></div>
           <p>${esc(symmetry.text)}</p>
+          <p class="caution"><b>조심할 점</b> ${esc(symmetry.caution)}</p>
         </div>
         ${gauge({ scale: [0, 100], bands: [{ below: 70 }, { below: 85 }, {}], band: { index: symmetry.value < 70 ? 0 : symmetry.value < 85 ? 1 : 2 }, value: symmetry.value, unit: '대칭 점수' })}
       </div>
