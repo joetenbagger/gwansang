@@ -1,5 +1,5 @@
 // combined.js — 사주와 관상을 엮어 종합 풀이를 만듭니다 (순수 함수)
-import { EL, GENERATES, CONTROLS, GROUPS } from './saju/data.js?v=10';
+import { EL, GENERATES, CONTROLS, GROUPS } from './saju/data.js?v=11';
 
 const FACE_EL = { wood: 'wood', fire: 'fire', earth: 'earth', metal: 'metal', water: 'water' };
 

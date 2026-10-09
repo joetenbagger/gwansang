@@ -1,6 +1,6 @@
 // share.js — 공유용 한 장 이미지 (1080×1440)
-import { STEMS, EL, ELEMENTS } from './saju/data.js?v=10';
-import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=10';
+import { STEMS, EL, ELEMENTS } from './saju/data.js?v=11';
+import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=11';
 
 const C = {
   paper: '#EED89A', card: '#F7EBC4', ink: '#241A10', ink2: '#5A4A36', rule: '#C9AE68', seal: '#B92D1A',

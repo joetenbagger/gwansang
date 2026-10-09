@@ -1,6 +1,6 @@
 // loading.js — 분석 중 연출. 계산은 이미 끝난 상태에서 결과를 한 단계씩 보여 줍니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=10';
-import { LOADING_STEPS } from './copy.js?v=10';
+import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=11';
+import { LOADING_STEPS } from './copy.js?v=11';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 250) : ms));
@@ -8,16 +8,20 @@ const ease = t => 1 - Math.pow(1 - t, 3);
 const ALL_HANJA = [...Object.keys(STEMS), ...Object.keys(BRANCHES)];
 const GLOW = { wood: '#6BC48C', fire: '#F07A5F', earth: '#E4B456', metal: '#D3D7DE', water: '#7FA6E8' };
 
+// 화면이 가려져 requestAnimationFrame이 멈춰도 연출이 끝나도록 타이머로도 마무리합니다.
 function tween(ms, fn) {
   return new Promise(resolve => {
     if (reduce) { fn(1); resolve(); return; }
+    let done = false;
+    const finish = () => { if (done) return; done = true; fn(1); resolve(); };
     const t0 = performance.now();
     const tick = now => {
+      if (done) return;
       const t = Math.min(1, (now - t0) / ms);
-      fn(t);
-      if (t < 1) requestAnimationFrame(tick); else resolve();
+      if (t >= 1) finish(); else { fn(t); requestAnimationFrame(tick); }
     };
     requestAnimationFrame(tick);
+    setTimeout(finish, ms + 120);
   });
 }
 
