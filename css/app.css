@@ -371,5 +371,21 @@ table.pillars .unknown { font: 400 26px var(--display); color: var(--rule); }
 details.raw summary { cursor: pointer; font-weight: 600; } details.raw { padding: 12px; border: 1px solid var(--rule); }
 details.raw table { font-size: 12.5px; text-align: left; }
 
+/* 궁합 */
+.ghscore { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-top: 4px; }
+.ghscore b { font: 400 88px/1 var(--display); color: var(--seal); }
+.ghscore span { font-size: 18px; font-weight: 700; color: var(--ink-2); }
+.ghbar { height: 8px; background: var(--paper-3); position: relative; }
+.ghbar i { position: absolute; inset: 0 auto 0 0; background: var(--seal); }
+.matchrow .side b.mb { font: 700 30px/1.2 var(--body); letter-spacing: .04em; color: var(--ink); }
+.cardcta { margin-top: 6px; }
+
+/* 닮은 유명인 */
+.celebs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.celebs li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--rule); }
+.celebs b { font: 400 22px var(--display); }
+.celebs small { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+.iljubig { font: 400 54px/1 var(--display); letter-spacing: .06em; }
+
 .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); transform: translateX(-50%); background: var(--ink); color: var(--paper-2); padding: 10px 16px; border-radius: 3px; font-size: 14px; z-index: 40; max-width: 90vw; text-align: center; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }

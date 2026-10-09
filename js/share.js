@@ -1,7 +1,7 @@
 // share.js — 공유용 한 장 이미지 (1080×1440)
-import { STEMS, EL, ELEMENTS } from './saju/data.js?v=12';
-import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=12';
-import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=12';
+import { STEMS, EL, ELEMENTS } from './saju/data.js?v=14';
+import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=14';
+import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=14';
 
 const C = {
   paper: '#EED89A', card: '#F7EBC4', ink: '#241A10', ink2: '#5A4A36', rule: '#C9AE68', seal: '#B92D1A',
@@ -103,6 +103,42 @@ export async function makeShareImage({ input, saju, face, years }) {
   g.fillStyle = C.ink2; g.font = `500 24px ${SANS}`; g.textAlign = 'left';
   g.fillText(`${APP_NAME} · ${location.host}${location.pathname.replace(/index\.html$/, '')}`, 130, H - 100);
   return new Promise(res => cv.toBlob(b => res(b), 'image/png'));
+}
+
+// 궁합 공유 이미지
+export async function makeGhShareImage({ A, B, g }) {
+  try { await Promise.all([document.fonts.load(`400 80px ${SERIF}`), document.fonts.load(`700 40px ${SANS}`)]); } catch {}
+  const W = 1080, H = 1440;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  x.fillStyle = C.paper; x.fillRect(0, 0, W, H);
+  for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(110,80,30,${Math.random() * 0.05})`; x.fillRect(Math.random() * W, Math.random() * H, 2, 2); }
+  x.fillStyle = C.card; x.fillRect(60, 60, W - 120, H - 120);
+  x.strokeStyle = C.seal; x.lineWidth = 4; x.strokeRect(60, 60, W - 120, H - 120);
+  x.lineWidth = 1.5; x.strokeRect(76, 76, W - 152, H - 152);
+  x.textAlign = 'center';
+  const rel = { lover: '연인', friend: '친구', work: '동료' }[g.rel];
+  x.fillStyle = C.seal; x.font = `700 34px ${SANS}`; x.fillText(`${rel} 궁합`, W / 2, 170);
+  const a = A.saju.dayStem, b = B.saju.dayStem;
+  x.font = `400 230px ${SERIF}`;
+  x.fillStyle = C[STEMS[a].el]; x.fillText(a, W / 2 - 230, 450);
+  x.fillStyle = C[STEMS[b].el]; x.fillText(b, W / 2 + 230, 450);
+  x.fillStyle = C.ink2; x.font = `400 60px ${SERIF}`; x.fillText('×', W / 2, 380);
+  x.font = `700 36px ${SANS}`; x.fillStyle = C.ink;
+  x.fillText(A.name, W / 2 - 230, 520); x.fillText(B.name, W / 2 + 230, 520);
+  x.fillStyle = C.seal; x.font = `400 260px ${SERIF}`; x.fillText(String(g.score), W / 2, 820);
+  x.fillStyle = C.ink2; x.font = `700 40px ${SANS}`; x.fillText('점', W / 2 + (g.score >= 100 ? 230 : 170), 820);
+  x.fillStyle = C.ink; x.font = `400 70px ${SERIF}`; x.fillText(g.verdict.title, W / 2, 950);
+  x.fillStyle = C.ink2; x.font = `500 34px ${SANS}`; x.fillText(g.line, W / 2, 1020);
+  x.font = `500 30px ${SANS}`;
+  const rows = [`본성 · ${g.stem.tag}`, `속마음 · ${g.day.tag}`, `띠 · ${g.zodiac.tag}`];
+  if (g.mbti) rows.push(`MBTI · ${A.mbti} × ${B.mbti}`);
+  const one = rows.join('   ');
+  if (x.measureText(one).width <= W - 220) x.fillText(one, W / 2, 1130);
+  else { x.fillText(rows.slice(0, 2).join('   '), W / 2, 1110); x.fillText(rows.slice(2).join('   '), W / 2, 1160); }
+  x.fillStyle = C.ink2; x.font = `500 24px ${SANS}`;
+  x.fillText(`${APP_NAME} · ${location.host}${location.pathname.replace(/index\.html$/, '')}`, W / 2, H - 110);
+  return new Promise(res => cv.toBlob(bl => res(bl), 'image/png'));
 }
 
 export async function shareOrSave(blob, filename) {

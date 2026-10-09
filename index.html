@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="css/app.css?v=12">
+<link rel="stylesheet" href="css/app.css?v=14">
 </head>
 <body>
 <div class="app" id="app">
@@ -31,7 +31,10 @@
     </div>
     <div class="foot">
       <button class="cta red" data-go="topic" type="button">내 팔자 보러 가기</button>
-      <button class="link" id="openLast" type="button" hidden>지난번 결과 다시 보기</button>
+      <div class="row2" id="lastRow" hidden>
+        <button class="ghost" id="openLast" type="button">지난 결과 보기</button>
+        <button class="ghost" id="openGhIntro" type="button">친구와 궁합</button>
+      </div>
       <p class="privacy">생일과 사진은 이 기기 밖으로 나가지 않아요.</p>
     </div>
   </section>
@@ -176,6 +179,64 @@
     <div class="foot"><button class="cta red" id="goAnalyze" type="button" hidden>이 얼굴로 풀이 보기</button></div>
   </section>
 
+  <!-- 궁합: 상대 1 -->
+  <section class="screen" data-screen="gh1" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b style="width:50%"></b></div></div>
+    <h1 class="q">누구와<br>궁합을 볼까요?</h1>
+    <p class="sub">상대의 생일도 이 기기 안에서만 계산하고 저장하지 않아요.</p>
+    <div class="body">
+      <div class="opts" id="ghRelOpts">
+        <button class="opt" type="button" data-v="lover" aria-pressed="false"><span><b>연인·썸</b><small>설렘과 생활이 맞을까</small></span><span class="mark"></span></button>
+        <button class="opt" type="button" data-v="friend" aria-pressed="true"><span><b>친구</b><small>오래 갈 사이일까</small></span><span class="mark"></span></button>
+        <button class="opt" type="button" data-v="work" aria-pressed="false"><span><b>동료·동업</b><small>같이 일하면 어떨까</small></span><span class="mark"></span></button>
+      </div>
+      <div class="field"><label for="ghName">상대 이름</label><input class="input" id="ghName" type="text" maxlength="12" autocomplete="off" placeholder="예: 하늘"></div>
+      <div class="field"><span class="lbl">상대 성별</span>
+        <div class="toggle" id="ghGender" role="group" aria-label="상대 성별">
+          <button type="button" data-v="M" aria-pressed="false">남자</button>
+          <button type="button" data-v="F" aria-pressed="true">여자</button>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><button class="cta" id="ghNext" type="button">다음</button></div>
+  </section>
+
+  <!-- 궁합: 상대 2 -->
+  <section class="screen" data-screen="gh2" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b style="width:100%"></b></div></div>
+    <h1 class="q"><span class="who" id="ghWho"></span>언제<br>태어났어요?</h1>
+    <p class="sub">시간과 MBTI는 몰라도 괜찮아요.</p>
+    <div class="body">
+      <div class="toggle" id="ghCal" role="group" aria-label="달력">
+        <button type="button" data-v="solar" aria-pressed="true">양력</button>
+        <button type="button" data-v="lunar" aria-pressed="false">음력</button>
+      </div>
+      <div class="ymd">
+        <div class="field"><label for="ghY">년</label><input class="input" id="ghY" type="number" inputmode="numeric" placeholder="1993"></div>
+        <div class="field"><label for="ghM">월</label><input class="input" id="ghM" type="number" inputmode="numeric" placeholder="3"></div>
+        <div class="field"><label for="ghD">일</label><input class="input" id="ghD" type="number" inputmode="numeric" placeholder="27"></div>
+      </div>
+      <label class="check" id="ghLeapWrap" hidden><input type="checkbox" id="ghLeap"> 윤달이에요</label>
+      <div class="hm">
+        <div class="field"><label for="ghHour">태어난 시</label><select class="input" id="ghHour"></select></div>
+        <div class="field"><label for="ghMbti">MBTI</label><select class="input" id="ghMbti"></select></div>
+      </div>
+      <p class="err" id="ghErr" role="alert"></p>
+    </div>
+    <div class="foot"><button class="cta red" id="ghGo" type="button">궁합 보기</button></div>
+  </section>
+
+  <!-- 궁합 결과 -->
+  <section class="screen result" data-screen="ghResult" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><span class="count" id="ghCount"></span></div>
+    <div class="deck" id="ghDeck" tabindex="0" aria-label="궁합 카드. 옆으로 넘겨 보세요"></div>
+    <div class="dots" id="ghDots" aria-hidden="true"></div>
+    <div class="resultfoot">
+      <button class="ghost" id="ghAgain" type="button">다른 사람과</button>
+      <button class="cta red" id="ghShare" type="button">이미지로 저장</button>
+    </div>
+  </section>
+
   <!-- 분석 -->
   <section class="loading" data-screen="loading" hidden aria-live="polite">
     <div class="stage" id="stage"></div>
@@ -209,6 +270,6 @@
   </section>
 </div>
 <div class="toast" id="toast" hidden role="status"></div>
-<script type="module" src="js/app.js?v=12"></script>
+<script type="module" src="js/app.js?v=14"></script>
 </body>
 </html>

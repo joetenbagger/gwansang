@@ -1,18 +1,22 @@
 // app.js — 화면 흐름. 질문 하나씩 → 분석 연출 → 결과 카드.
-import { computeMetrics } from './metrics.js?v=12';
-import { interpret } from './rules.js?v=12';
-import { detectLandmarks } from './detector.js?v=12';
-import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=12';
-import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=12';
-import { combine } from './combined.js?v=12';
-import { drawFace, renderFace } from './view-face.js?v=12';
-import { renderSaju } from './view-saju.js?v=12';
-import { buildCards } from './deck.js?v=12';
-import { runLoading } from './loading.js?v=12';
-import { makeShareImage, shareOrSave } from './share.js?v=12';
-import { TOPICS, SIJIN, hourLabel } from './copy.js?v=12';
-import { TYPES, QUIZ } from './mbti.js?v=12';
-import { esc } from './util.js?v=12';
+import { computeMetrics } from './metrics.js?v=14';
+import { interpret } from './rules.js?v=14';
+import { detectLandmarks } from './detector.js?v=14';
+import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=14';
+import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=14';
+import { combine } from './combined.js?v=14';
+import { drawFace, renderFace } from './view-face.js?v=14';
+import { renderSaju } from './view-saju.js?v=14';
+import { buildCards } from './deck.js?v=14';
+import { runLoading } from './loading.js?v=14';
+import { makeShareImage, shareOrSave } from './share.js?v=14';
+import { TOPICS, SIJIN, hourLabel } from './copy.js?v=14';
+import { TYPES, QUIZ } from './mbti.js?v=14';
+import { esc } from './util.js?v=14';
+import { gunghap } from './gunghap.js?v=14';
+import { buildGhCards } from './gh-deck.js?v=14';
+import { runGhLoading } from './loading.js?v=14';
+import { makeGhShareImage } from './share.js?v=14';
 
 const $ = id => document.getElementById(id);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -49,7 +53,8 @@ window.addEventListener('popstate', e => {
   const target = e.state?.screen || 'intro';
   if (target === 'loading') return;
   stopCamera();
-  show(target === 'result' && !result ? 'intro' : target, { back: true, push: false });
+  const fallback = (target === 'result' && !result) ? 'intro' : (target === 'ghResult' && !ghResult) ? 'gh1' : target;
+  show(fallback, { back: true, push: false });
 });
 
 function next() {
@@ -64,7 +69,8 @@ function onEnter(name) {
   if (name === 'name') setTimeout(() => $('nameInput').focus(), 350);
   if (name === 'gender') $$('.who').forEach(w => { w.textContent = input.name ? `${input.name}님, ` : ''; });
   if (name === 'birth' && !input.year) setTimeout(() => $('yIn').focus(), 350);
-  if (name === 'intro') $('openLast').hidden = !loadSaved();
+  if (name === 'intro') $('lastRow').hidden = !loadSaved();
+  if (name === 'gh2') $('ghWho').textContent = gh.name ? `${gh.name}님은 ` : '';
 }
 
 // ---------- 질문 화면 ----------
@@ -406,6 +412,102 @@ function restoreForm() {
   setTimeMode(input.timeMode || 'exact');
   $$('[data-screen] [data-next]').forEach(b => { b.disabled = false; });
 }
+
+// ---------- 궁합 ----------
+const gh = { rel: 'friend', name: '', gender: 'F', calendar: 'solar', leap: false, year: '', month: '', day: '', hour: '', mbti: '' };
+let ghResult = null;
+
+$('ghHour').innerHTML = '<option value="">모름</option>' + Array.from({ length: 24 }, (_, h) => `<option value="${h}">${hourLabel(h).full}</option>`).join('');
+$('ghMbti').innerHTML = '<option value="">모름</option>' + TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
+$$('#ghRelOpts .opt').forEach(o => o.addEventListener('click', () => {
+  gh.rel = o.dataset.v;
+  $$('#ghRelOpts .opt').forEach(x => x.setAttribute('aria-pressed', String(x === o)));
+}));
+$$('#ghGender button').forEach(b => b.addEventListener('click', () => {
+  gh.gender = b.dataset.v;
+  $$('#ghGender button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+}));
+$$('#ghCal button').forEach(b => b.addEventListener('click', () => {
+  gh.calendar = b.dataset.v;
+  $$('#ghCal button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  $('ghLeapWrap').hidden = gh.calendar !== 'lunar';
+}));
+$('ghName').addEventListener('input', e => { gh.name = e.target.value.trim().slice(0, 12); });
+$('ghNext').addEventListener('click', () => show('gh2'));
+[['ghY', 'year'], ['ghM', 'month'], ['ghD', 'day']].forEach(([id, k]) => $(id).addEventListener('input', e => {
+  gh[k] = e.target.value; $('ghErr').textContent = '';
+  if (k === 'year' && e.target.value.length === 4) $('ghM').focus();
+  if (k === 'month' && (e.target.value.length === 2 || +e.target.value > 1)) $('ghD').focus();
+}));
+
+function openGh() {
+  if (!result) {
+    const v = loadSaved();
+    if (!v) { show('topic'); return; }
+    Object.assign(input, v); restoreForm();
+    try { result = compute(input, null); } catch { show('topic'); return; }
+    renderResult();
+  }
+  show('gh1');
+}
+$('openGhIntro').addEventListener('click', openGh);
+$('deck').addEventListener('click', e => { if (e.target.closest('[data-open-gh]')) openGh(); });
+$('ghAgain').addEventListener('click', () => {
+  Object.assign(gh, { name: '', year: '', month: '', day: '', hour: '', mbti: '' });
+  ['ghName', 'ghY', 'ghM', 'ghD'].forEach(id => { $(id).value = ''; });
+  $('ghHour').value = ''; $('ghMbti').value = '';
+  show('gh1');
+});
+
+$('ghGo').addEventListener('click', async () => {
+  gh.leap = $('ghLeap').checked; gh.hour = $('ghHour').value; gh.mbti = $('ghMbti').value;
+  const now = new Date().getFullYear();
+  const y = +gh.year, m = +gh.month, d = +gh.day;
+  let msg = '';
+  if (!(y >= 1910 && y <= now)) msg = `태어난 해를 1910~${now} 사이로 넣어 주세요.`;
+  else if (!(m >= 1 && m <= 12)) msg = '월은 1~12 사이예요.';
+  else if (!(d >= 1 && d <= 31)) msg = '일이 맞지 않아요.';
+  else if (gh.calendar === 'solar' && new Date(Date.UTC(y, m - 1, d)).getUTCMonth() !== m - 1) msg = `${m}월에는 ${d}일이 없어요.`;
+  let chartB;
+  if (!msg) {
+    try { chartB = computePillars({ calendar: gh.calendar, leap: gh.leap, year: y, month: m, day: d, hour: gh.hour === '' ? null : +gh.hour, minute: 0, gender: gh.gender, place: 'seoul', ziMode: 'split' }); }
+    catch (e) { msg = e.userMessage ? e.message : '날짜를 확인해 주세요.'; }
+  }
+  if (msg) { $('ghErr').textContent = msg; return; }
+  const sajuB = analyzeSaju(chartB);
+  const yr = new Date().getFullYear();
+  const A = { name: input.name || '나', saju: result.saju, mbti: input.mbti, years: result.years };
+  const B = { name: gh.name || '상대', saju: sajuB, mbti: gh.mbti || null, years: [analyzeYear(sajuB, yearPillar(yr)), analyzeYear(sajuB, yearPillar(yr + 1))] };
+  const g = gunghap(A, B, gh.rel);
+  ghResult = { A, B, g };
+  show('loading');
+  try { await runGhLoading(document.querySelector('[data-screen="loading"]'), ghResult); } catch (e) { console.error(e); }
+  $('ghDeck').innerHTML = buildGhCards(A, B, g).join('');
+  $('ghDots').innerHTML = [...$('ghDeck').children].map(() => '<i></i>').join('');
+  $('ghDeck').scrollLeft = 0; ghIndex = 0; ghDotsUpdate();
+  show('ghResult');
+});
+
+let ghIndex = 0;
+function ghDotsUpdate() {
+  const n = $('ghDeck').children.length;
+  $$('#ghDots i').forEach((d, i) => d.classList.toggle('on', i === ghIndex));
+  $('ghCount').textContent = `${ghIndex + 1} / ${n}`;
+}
+$('ghDeck').addEventListener('scroll', () => {
+  const d = $('ghDeck'); const w = d.firstElementChild?.getBoundingClientRect().width || 1;
+  const i = Math.round(d.scrollLeft / (w + 12));
+  if (i !== ghIndex) { ghIndex = i; ghDotsUpdate(); }
+}, { passive: true });
+$('ghShare').addEventListener('click', async () => {
+  const btn = $('ghShare'); btn.disabled = true; btn.textContent = '만드는 중…';
+  try {
+    const blob = await makeGhShareImage(ghResult);
+    const r = await shareOrSave(blob, `얼굴팔자-궁합-${ghResult.A.name}-${ghResult.B.name}.png`);
+    if (r === 'saved') toast('이미지를 저장했어요.');
+  } catch (e) { console.error(e); toast('이미지를 만들지 못했어요.'); }
+  finally { btn.disabled = false; btn.textContent = '이미지로 저장'; }
+});
 
 // ---------- 시작 ----------
 const saved = loadSaved();

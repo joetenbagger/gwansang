@@ -1,7 +1,7 @@
 // loading.js — 분석 중 연출. 계산은 이미 끝난 상태에서 결과를 한 단계씩 보여 줍니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=12';
-import { LOADING_STEPS } from './copy.js?v=12';
-import { predictMbti } from './mbti.js?v=12';
+import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=14';
+import { LOADING_STEPS } from './copy.js?v=14';
+import { predictMbti } from './mbti.js?v=14';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 250) : ms));
@@ -199,6 +199,36 @@ async function mergeScene(stage, saju, face) {
   });
   await tween(700, t => { C.setAttribute('opacity', ease(t)); C.setAttribute('font-size', 120 + 30 * ease(t)); });
   await wait(600);
+}
+
+// 궁합: 두 사람의 일간이 가운데로 모이고 점수가 올라감
+export async function runGhLoading(root, { A, B, g }) {
+  const stage = root.querySelector('#stage');
+  const list = root.querySelector('#lsteps');
+  const steps = [['p', '두 사람의 만세력을 펼치는 중'], ['m', '본성과 기운을 맞춰 보는 중'], ['s', '궁합 점수를 매기는 중']];
+  list.innerHTML = steps.map(([k, t]) => `<li data-s="${k}"><i></i>${t}</li>`).join('');
+  const mark = (s, cls) => { const li = list.querySelector(`[data-s="${s}"]`); li.classList.remove('on'); li.classList.add(cls); };
+  const a = A.saju.dayStem, b = B.saju.dayStem;
+  stage.innerHTML = `<svg class="fade" viewBox="0 0 340 340">
+    <text id="gA" x="70" y="185" text-anchor="middle" font-family="Song Myung, serif" font-size="110" fill="${GLOW[STEMS[a].el]}">${a}</text>
+    <text id="gB" x="270" y="185" text-anchor="middle" font-family="Song Myung, serif" font-size="110" fill="${GLOW[STEMS[b].el]}">${b}</text>
+    <text id="nA" x="70" y="225" text-anchor="middle" font-size="14" fill="#9F8E6A"></text>
+    <text id="nB" x="270" y="225" text-anchor="middle" font-size="14" fill="#9F8E6A"></text>
+    <text id="sc" x="170" y="300" text-anchor="middle" font-family="Song Myung, serif" font-size="56" fill="#F3DE9C" opacity="0">0</text>
+  </svg>`;
+  stage.querySelector('#nA').textContent = A.name; stage.querySelector('#nB').textContent = B.name;
+  const gA = stage.querySelector('#gA'), gB = stage.querySelector('#gB'), sc = stage.querySelector('#sc');
+  mark('p', 'on'); await wait(900); mark('p', 'done');
+  mark('m', 'on');
+  await tween(1200, t => { const k = ease(t); gA.setAttribute('x', 70 + 45 * k); gB.setAttribute('x', 270 - 45 * k); });
+  mark('m', 'done');
+  mark('s', 'on');
+  sc.setAttribute('opacity', '1');
+  await tween(1300, t => { sc.textContent = Math.round(g.score * ease(t)); });
+  sc.textContent = g.score;
+  await wait(600);
+  mark('s', 'done');
+  await wait(200);
 }
 
 export async function runLoading(root, { chart, saju, face, input }) {

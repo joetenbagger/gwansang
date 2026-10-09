@@ -15,7 +15,9 @@
 | `js/deck.js` | 결과 카드 묶음 |
 | `js/topic.js` · `topic-texts.js` | 고른 질문 심층 카드 4장(연애·돈·일·올해·나) |
 | `js/mbti.js` | 사주로 MBTI 추정, 실제 MBTI 비교, 간이 테스트 |
-| `js/share.js` | 공유용 이미지 만들기 |
+| `js/gunghap.js` · `gh-deck.js` | 친구·연인·동료 궁합 계산과 결과 카드 |
+| `js/celebs.js` · `celeb-match.js` | 공개 생년월일 기반 유명인 목록과 같은 일주·비슷한 기운 매칭 |
+| `js/share.js` | 공유용 이미지 만들기(내 결과, 궁합) |
 | `js/copy.js` | 화면 문구, 시진 표 |
 | `js/view-saju.js` · `view-face.js` | 전체 풀이(사주·관상 상세) |
 | `js/view-total.js` | 이전 버전의 종합 화면(점검 도구에서만 사용) |
@@ -26,7 +28,7 @@
 | `js/detector.js` | 사진 → 얼굴 랜드마크 68점 (face-api) |
 | `js/metrics.js` · `rules.js` | 관상 측정과 풀이 문구 |
 | `vendor/` | lunar-javascript(만세력), face-api(얼굴 인식) — 모두 MIT |
-| `tools/` | 분포 점검(`calibrate-saju.mjs`), 무작위 검사(`fuzz.mjs`), MBTI 보정(`calibrate-mbti.mjs`), 캐시 버전 올리기(`bump-version.sh`) |
+| `tools/` | 분포 점검(`calibrate-saju.mjs`), 무작위 검사(`fuzz.mjs`), MBTI 보정(`calibrate-mbti.mjs`), 궁합 분포(`calibrate-gunghap.mjs`), 캐시 버전 올리기(`bump-version.sh`) |
 
 계산(`saju/*`, `combined.js`, `metrics.js`, `rules.js`)은 화면과 분리된 순수 함수라 앱으로 옮겨도 그대로 씁니다.
 

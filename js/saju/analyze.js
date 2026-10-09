@@ -3,10 +3,10 @@ import {
   ELEMENTS, EL, STEMS, BRANCHES, GENERATES, CONTROLS, generatedBy, controlledBy,
   tenGod, groupOfElement, elementOfGroup, GROUPS, GROUP_ORDER, TEN_GODS,
   CLASH, BRANCH_COMBINE, STEM_COMBINE, isPair, triadOf, PEACH, HORSE, CANOPY, NOBLE, BLADE, KUIGANG,
-} from './data.js?v=12';
+} from './data.js?v=14';
 import {
   DAY_MASTER, STRENGTH, GROUP_TEXT, CAREER, ELEMENT_EXCESS, ELEMENT_LACK, SHINSAL, CLASH_TEXT, LUCK_THEME,
-} from './texts.js?v=12';
+} from './texts.js?v=14';
 
 // 일간 강약 판정 경계 (무작위 생일 2만 개 분포의 약 1/3 지점들로 맞춤 — tools/calibrate-saju.mjs)
 export const STRENGTH_CUTS = { weak: 0.33, strong: 0.47 };

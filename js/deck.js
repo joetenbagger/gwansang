@@ -1,9 +1,10 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=12';
-import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=12';
-import { esc } from './util.js?v=12';
-import { topicCards } from './topic.js?v=12';
-import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=12';
+import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=14';
+import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=14';
+import { esc } from './util.js?v=14';
+import { topicCards } from './topic.js?v=14';
+import { findCelebs } from './celeb-match.js?v=14';
+import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=14';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -128,6 +129,7 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
 
   // 2-1. MBTI
   for (const c of mbtiCards({ input, saju })) cards.push(c);
+  cards.push(celebCard(saju));
 
   // 3. 여덟 글자와 다섯 기운
   const top = ELEMENTS.reduce((a, e) => (saju.powerPct[e] > saju.powerPct[a] ? e : a));
@@ -193,5 +195,23 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
     </div>
     <p class="hint">재미로 보는 풀이예요. 전체 풀이에서 사주 원국, 십신, 신살, 대운을 자세히 볼 수 있어요.</p>`));
 
+  // 14. 친구와 궁합으로 이어 가기
+  cards.push(card('gh', '이제 둘이 볼 차례', `
+    <h2>친구랑, 그 사람이랑<br><em>궁합</em>은 어떨까?</h2>
+    <p>상대의 생일만 넣으면 본성, 서로 필요한 기운, 띠, MBTI까지 엮어서 점수로 보여 드려요.</p>
+    <button class="cta red cardcta" type="button" data-open-gh>궁합 보러 가기</button>`));
+
   return cards;
+}
+
+function celebCard(saju) {
+  const { ilju, same, similar } = findCelebs(saju);
+  const dm = saju.dayStem;
+  const li = c => `<li><b>${esc(c.name)}</b><small>${esc(c.field)} · ${c.date.replace(/-/g, '.')}</small></li>`;
+  return card('celeb', '나와 닮은 유명인', `
+    <span class="iljubig" data-el="${STEMS[dm].el}" style="color:var(--e)">${ilju}</span>
+    <h2>${same.length ? `<em>${STEMS[ilju[0]].ko}${BRANCHES[ilju[1]].ko}일주</em>가 같은 사람` : `<em>${STEMS[dm].ko}${EL[STEMS[dm].el].ko}</em> 일간이 같은 사람`}</h2>
+    ${same.length ? `<p>태어난 날의 기둥(일주)이 같으면 타고난 성향이 가장 닮았다고 봐요.</p><ul class="celebs">${same.map(li).join('')}</ul>` : ''}
+    ${similar.length ? `${same.length ? '<hr><p><b>기운까지 비슷한 사람</b></p>' : '<p>일주가 같은 유명인은 목록에 없지만, 나를 나타내는 글자가 같고 다섯 기운의 비율이 비슷한 사람들이에요.</p>'}<ul class="celebs">${similar.map(li).join('')}</ul>` : ''}
+    <p class="hint">공개된 양력 생일 기준이고, 태어난 시각은 반영하지 않았어요. 재미로만 봐 주세요.</p>`);
 }
