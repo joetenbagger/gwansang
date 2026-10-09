@@ -56,11 +56,11 @@ export const TEN_GODS = {
   편인: { group: 'inseong', hanja: '偏印' }, 정인: { group: 'inseong', hanja: '正印' },
 };
 export const GROUPS = {
-  bigeop:    { name: '비겁', hanja: '比劫', role: '나와 같은 기운 — 자아·형제·동료·경쟁' },
-  siksang:   { name: '식상', hanja: '食傷', role: '내가 낳는 기운 — 표현·재능·말·자녀(여성)' },
-  jaeseong:  { name: '재성', hanja: '財星', role: '내가 다스리는 기운 — 재물·현실 감각·배우자(남성)' },
-  gwanseong: { name: '관성', hanja: '官星', role: '나를 다스리는 기운 — 직장·명예·규칙·배우자(여성)' },
-  inseong:   { name: '인성', hanja: '印星', role: '나를 돕는 기운 — 학문·문서·어머니·보호' },
+  bigeop:    { name: '비겁', hanja: '比劫', role: '나와 같은 기운', about: '자아·형제·동료·경쟁' },
+  siksang:   { name: '식상', hanja: '食傷', role: '내가 낳는 기운', about: '표현·재능·말·자녀(여성)' },
+  jaeseong:  { name: '재성', hanja: '財星', role: '내가 다스리는 기운', about: '재물·현실 감각·배우자(남성)' },
+  gwanseong: { name: '관성', hanja: '官星', role: '나를 다스리는 기운', about: '직장·명예·규칙·배우자(여성)' },
+  inseong:   { name: '인성', hanja: '印星', role: '나를 돕는 기운', about: '학문·문서·어머니·보호' },
 };
 export const GROUP_ORDER = ['bigeop', 'siksang', 'jaeseong', 'gwanseong', 'inseong'];
 

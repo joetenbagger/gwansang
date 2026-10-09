@@ -5,6 +5,6 @@ V=${1:?버전 번호를 넣어 주세요}
 cd "$(dirname "$0")/.."
 for f in index.html js/*.js js/saju/*.js; do
   # 이미 붙은 버전은 교체, 없는 상대경로 import에는 추가
-  sed -i -E "s/\.(m?js)\?v=[0-9]+/.\1?v=$V/g; s/(from '\.{1,2}\/[^'?]+\.m?js)'/\1?v=$V'/g; s/(import\('\.{1,2}\/[^'?]+\.m?js)'/\1?v=$V'/g" "$f"
+  sed -i -E "s/\.(m?js|css)\?v=[0-9]+/.\1?v=$V/g; s/(from '\.{1,2}\/[^'?]+\.m?js)'/\1?v=$V'/g; s/(import\('\.{1,2}\/[^'?]+\.m?js)'/\1?v=$V'/g" "$f"
 done
 grep -rhoE "\?v=[0-9]+" index.html js | sort | uniq -c

@@ -1,435 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>관상과 사주</title>
+<meta name="theme-color" content="#EED89A">
+<title>얼굴팔자</title>
+<meta name="description" content="생년월일시와 얼굴 사진으로 보는 사주와 관상. 사진과 생일은 내 폰 밖으로 나가지 않아요.">
+<meta property="og:title" content="얼굴팔자">
+<meta property="og:description" content="얼굴에 드러난 것, 태어난 날에 적힌 것">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<style>
-/* Layout: 왼쪽은 사진과 측정선(상법도), 오른쪽은 풀이. 좁은 화면에선 위아래로 쌓임. 쪽빛 먹과 인주 도장 색. */
-:root {
-  --paper: #F1F2F5;
-  --surface: #FFFFFF;
-  --ink: #1B2440;
-  --muted: #5B6480;
-  --line: #D4D8E2;
-  --seal: #B3301C;
-  --seal-soft: #F5E1DC;
-  --guide: #2F5FA8;
-  --wood: #2E7D4F; --fire: #C2412D; --earth: #A86F12; --metal: #6E7685; --water: #24477A;
-  --good: #2E7D4F; --good-soft: #E1F0E7;
-  --display: "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
-  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0E1320; --surface: #161D2D; --ink: #E3E6EE; --muted: #97A0B6;
-    --line: #2A3349; --seal: #E2694C; --seal-soft: #3B231F; --guide: #7FA6E8;
-    --wood: #5BC28A; --fire: #F07A5F; --earth: #E0AE4F; --metal: #B9C0CC; --water: #7FA6E8;
-    --good: #5BC28A; --good-soft: #1C3328;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #0E1320; --surface: #161D2D; --ink: #E3E6EE; --muted: #97A0B6;
-  --line: #2A3349; --seal: #E2694C; --seal-soft: #3B231F; --guide: #7FA6E8;
-  --wood: #5BC28A; --fire: #F07A5F; --earth: #E0AE4F; --metal: #B9C0CC; --water: #7FA6E8;
-  --good: #5BC28A; --good-soft: #1C3328;
-  color-scheme: dark;
-}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="css/app.css?v=8">
+</head>
+<body>
+<div class="app" id="app">
 
-* { box-sizing: border-box; }
-[hidden] { display: none !important; }
-body {
-  background: var(--paper); color: var(--ink);
-  font: 15px/1.65 var(--body);
-  word-break: keep-all; overflow-wrap: anywhere;
-  padding-inline: 16px; padding-block: 28px 56px;
-}
-.wrap { max-width: 1120px; margin-inline: auto; display: grid; gap: 28px; }
-
-header { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.seal {
-  width: 64px; height: 64px; flex: none;
-  border: 3px solid var(--seal); border-radius: 6px; color: var(--seal);
-  display: grid; grid-template-columns: 1fr 1fr; place-items: center;
-  font: 800 22px/1 var(--display); padding: 4px; transform: rotate(-4deg);
-}
-.seal span { writing-mode: vertical-rl; }
-header h1 { margin: 0; font: 800 clamp(28px, 4vw, 38px)/1.15 var(--display); letter-spacing: -0.01em; }
-header p { margin: 2px 0 0; color: var(--muted); max-width: 52ch; }
-
-.grid { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 28px; align-items: start; }
-@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
-
-.left { display: grid; gap: 14px; }
-@media (max-width: 860px) { .left { position: static; } }
-
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
-
-.consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--muted); }
-.consent input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--seal); flex: none; }
-.consent b { color: var(--ink); font-weight: 600; }
-
-.drop {
-  margin-top: 12px; border: 1.5px dashed var(--line); border-radius: 8px;
-  padding: 18px; text-align: center; display: grid; gap: 8px; justify-items: center;
-  transition: border-color .15s, background .15s;
-}
-.drop.over { border-color: var(--seal); background: var(--seal-soft); }
-.drop.locked { opacity: .55; }
-.btn {
-  font: 600 14px/1 var(--body); border-radius: 6px; padding: 11px 16px; cursor: pointer;
-  border: 1px solid var(--seal); background: var(--seal); color: var(--surface);
-}
-.btn[disabled] { cursor: not-allowed; opacity: .5; }
-.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
-.btn:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--guide); outline-offset: 2px; }
-.drop small { color: var(--muted); font-size: 12.5px; }
-.drop .row-actions { justify-content: center; }
-
-.cam { display: grid; gap: 10px; }
-.cam-frame { position: relative; border-radius: 8px; overflow: hidden; background: var(--ink); aspect-ratio: 100 / 105; max-width: 100%; }
-.cam-frame video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
-.cam-guide { position: absolute; inset: 0; width: 100%; height: 100%; }
-.cam-guide ellipse { stroke: var(--surface); }
-.cam-tip { margin: 0; font-size: 13px; color: var(--muted); }
-
-.stage { position: relative; }
-.stage canvas { width: 100%; height: auto; display: block; border-radius: 8px; background: var(--paper); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 12px/1.4 var(--mono); color: var(--muted); margin-top: 10px; }
-.legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
-.status { font-size: 13.5px; color: var(--muted); min-height: 1.4em; margin: 0; }
-.status.err { color: var(--seal); }
-.row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.right { display: grid; gap: 22px; min-width: 0; }
-.badge { display: inline-block; font: 500 11.5px/1 var(--mono); letter-spacing: .06em; padding: 5px 8px; border-radius: 4px; background: var(--seal-soft); color: var(--seal); }
-.badge.mine { background: var(--ink); color: var(--surface); }
-.standouts h3 { margin: 0 0 10px; font: 800 20px/1.3 var(--display); }
-.standouts ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; counter-reset: s; }
-.standouts li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; counter-increment: s; }
-.standouts li::before { content: counter(s); grid-row: span 4; font: 800 22px/1 var(--display); color: var(--seal); padding-top: 2px; }
-.standouts .palace { font: 700 12.5px var(--display); color: var(--seal); letter-spacing: .04em; }
-.standouts b { font-weight: 600; font-size: 15.5px; }
-.standouts li > span:not(.palace):not(.caution) { color: var(--muted); font-size: 14px; }
-.caution { margin: 6px 0 0; font-size: 14px; max-width: 62ch; color: var(--ink); }
-.caution b { font: 600 11.5px/1 var(--mono); letter-spacing: .04em; color: var(--seal); border: 1px solid var(--seal); border-radius: 3px; padding: 2px 5px; margin-right: 6px; vertical-align: 1px; }
-.standouts .caution { margin-top: 4px; }
-.warn { margin: 0; padding: 10px 12px; border-left: 3px solid var(--seal); background: var(--seal-soft); border-radius: 0 6px 6px 0; font-size: 13.5px; }
-
-.verdict { display: grid; gap: 14px; }
-.verdict h2 { margin: 0; font: 800 clamp(26px, 3.4vw, 34px)/1.2 var(--display); text-wrap: balance; }
-.verdict h2 em { font-style: normal; color: var(--seal); }
-.verdict .summary { margin: 0; font-size: 16px; max-width: 60ch; }
-.verdict .facetext { margin: 0; color: var(--muted); max-width: 62ch; }
-
-.elements { display: grid; gap: 7px; }
-.el { display: grid; grid-template-columns: 74px minmax(0, 1fr) 42px; gap: 10px; align-items: center; font-size: 13px; }
-.el .nm { font-family: var(--display); font-weight: 700; }
-.el .bar { height: 8px; background: var(--paper); border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
-.el .bar b { display: block; height: 100%; background: var(--muted); }
-.el.top .bar b { background: var(--seal); }
-.el .pc { font: 12px var(--mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-
-.group h3 { margin: 0 0 4px; font: 800 20px/1.3 var(--display); display: flex; align-items: baseline; gap: 10px; }
-.group h3 small { font: 400 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
-.feat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 210px); gap: 8px 22px; padding-block: 14px; border-top: 1px solid var(--line); }
-@media (max-width: 560px) { .feat { grid-template-columns: minmax(0, 1fr); } }
-.feat .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
-.feat .palace { font: 700 13px var(--display); color: var(--seal); letter-spacing: .04em; }
-.feat .name { font-size: 13px; color: var(--muted); }
-.feat .tag { width: 100%; font-weight: 600; font-size: 16px; }
-.feat p { margin: 4px 0 0; max-width: 62ch; }
-.feat .note { font-size: 12.5px; color: var(--muted); }
-
-.gauge { align-self: center; display: grid; gap: 5px; }
-.gauge .track { position: relative; height: 22px; }
-.gauge .seg { position: absolute; top: 9px; height: 4px; background: var(--line); }
-.gauge .seg.on { background: var(--ink); }
-.gauge .tick { position: absolute; top: 5px; width: 1px; height: 12px; background: var(--muted); }
-.gauge .dot { position: absolute; top: 4px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--seal); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--seal); }
-.gauge .val { font: 12px var(--mono); color: var(--muted); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
-.gauge .val b { color: var(--ink); font-weight: 500; }
-
-details.raw summary { cursor: pointer; font-weight: 600; }
-.tablewrap { overflow-x: auto; margin-top: 10px; }
-table { border-collapse: collapse; font: 12.5px/1.4 var(--mono); width: 100%; font-variant-numeric: tabular-nums; }
-th, td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
-th { color: var(--muted); font-weight: 500; }
-
-footer { color: var(--muted); font-size: 12.5px; max-width: 80ch; display: grid; gap: 4px; }
-footer p { margin: 0; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-
-/* ---------- 오행 색 ---------- */
-[data-el="wood"] { --e: var(--wood); } [data-el="fire"] { --e: var(--fire); } [data-el="earth"] { --e: var(--earth); }
-[data-el="metal"] { --e: var(--metal); } [data-el="water"] { --e: var(--water); }
-
-.seal { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-.seal span { writing-mode: horizontal-tb; font-size: 20px; }
-
-/* ---------- 입력 폼 ---------- */
-form.panel { display: grid; gap: 14px; }
-.field { display: grid; gap: 6px; min-width: 0; }
-.field > label, .field > .lbl { font-size: 13px; font-weight: 600; }
-.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.row > * { min-width: 0; }
-input[type="text"], input[type="number"], input[type="time"], select {
-  font: 15px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line);
-  border-radius: 6px; padding: 9px 10px; min-height: 42px; width: 100%;
-}
-input:focus-visible, select:focus-visible { outline: 2px solid var(--guide); outline-offset: 1px; }
-.ymd { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 8px; }
-.ymd label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
-.segctl { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.segctl label { position: relative; }
-.segctl input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.segctl span { display: block; padding: 9px 14px; font-size: 14px; cursor: pointer; }
-.segctl input:checked + span { background: var(--ink); color: var(--surface); }
-.segctl input:focus-visible + span { outline: 2px solid var(--guide); outline-offset: -2px; }
-.check { display: inline-flex; gap: 6px; align-items: center; font-size: 13.5px; }
-.check input { width: 17px; height: 17px; accent-color: var(--seal); }
-details.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
-details.adv .field { margin-top: 10px; }
-.submit { display: flex; gap: 8px; flex-wrap: wrap; }
-.submit .btn { flex: 1 1 auto; }
-.btn.big { font-size: 16px; padding: 14px 18px; }
-.photo { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
-.photo h2 { margin: 0; font: 800 17px/1.3 var(--display); }
-.photo small { color: var(--muted); font-size: 12.5px; }
-.photoDone { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 12px; align-items: center; }
-.photoDone canvas { width: 88px; height: auto; border-radius: 6px; display: block; }
-.photoDone p { margin: 0 0 6px; font-size: 13.5px; }
-
-/* ---------- 결과 ---------- */
-.result-head { display: grid; gap: 12px; }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
-.tabs button { font: 600 15px var(--body); background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); padding: 10px 14px; cursor: pointer; white-space: nowrap; }
-.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--seal); }
-.tabs button[disabled] { opacity: .45; cursor: not-allowed; }
-.tabs button:focus-visible { outline: 2px solid var(--guide); outline-offset: -2px; }
-.tabpanel { display: grid; gap: 26px; min-width: 0; }
-.block { display: grid; gap: 8px; min-width: 0; }
-.block > h3 { margin: 0; font: 800 20px/1.3 var(--display); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.block > h3 small { font: 400 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
-.block > p { margin: 0; max-width: 64ch; }
-.fine { font-size: 12.5px; color: var(--muted); margin: 0; max-width: 72ch; }
-.hint { margin: 0; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; font-size: 14px; color: var(--muted); }
-.pill { display: inline-block; font: 600 11.5px/1 var(--body); padding: 4px 8px; border-radius: 999px; border: 1px solid currentColor; vertical-align: 2px; }
-.pill.good { color: var(--good); background: var(--good-soft); }
-.pill.bad { color: var(--seal); background: var(--seal-soft); }
-.pill.neutral { color: var(--muted); }
-.mtitle { margin: 0; }
-.match { padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-
-table.pillars { font-family: var(--body); text-align: center; min-width: 360px; }
-table.pillars th, table.pillars td { text-align: center; padding: 6px 4px; }
-table.pillars thead th { font-size: 13px; color: var(--ink); font-weight: 600; }
-table.pillars thead th small { display: block; font: 400 11px var(--mono); color: var(--muted); }
-table.pillars tbody th { font-size: 11.5px; color: var(--muted); font-weight: 500; text-align: left; width: 48px; }
-table.pillars .god { font-size: 12.5px; color: var(--muted); }
-table.pillars .glyph { padding-block: 8px; }
-table.pillars .glyph .hz { display: block; font: 800 34px/1.1 var(--display); color: var(--e); }
-table.pillars .glyph .kr { display: block; font-size: 12px; color: var(--muted); }
-table.pillars .glyph.me { background: var(--seal-soft); border-radius: 6px; }
-table.pillars .hidden span { font: 600 14px var(--display); color: var(--e); margin: 0 2px; }
-table.pillars .unknown { font: 800 26px var(--display); color: var(--line); }
-
-.dm { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; }
-.dm .hz { font: 800 56px/1 var(--display); color: var(--e); width: 72px; height: 72px; display: grid; place-items: center; border: 2px solid var(--e); border-radius: 10px; }
-.dm p { margin: 4px 0 0; max-width: 62ch; }
-
-.ohaeng { display: grid; gap: 8px; }
-.oh { display: grid; grid-template-columns: 58px minmax(0, 1fr) 84px 36px; gap: 10px; align-items: center; font-size: 13px; }
-.oh .nm { font: 700 14px var(--display); color: var(--e); }
-.oh .bar, .godrow .bar { height: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
-.oh .bar b { display: block; height: 100%; background: var(--e); }
-.oh .num { font: 12px var(--mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-.oh .flag { font-size: 12px; font-weight: 600; color: var(--seal); }
-
-.meter .track { position: relative; height: 26px; }
-.meter .zone { position: absolute; top: 10px; height: 6px; background: var(--line); }
-.meter .zone.mid { background: var(--muted); opacity: .45; }
-.meter .dot { position: absolute; top: 5px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--seal); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--seal); }
-.meter .labels { display: flex; justify-content: space-between; font: 12px var(--mono); color: var(--muted); }
-
-.elchip { display: inline-block; font: 700 13px/1 var(--display); color: var(--e); border: 1.5px solid var(--e); border-radius: 5px; padding: 4px 7px; }
-.yong { display: flex; gap: 10px; flex-wrap: wrap; }
-.yong > div { display: grid; gap: 4px; justify-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-width: 120px; flex: 1 1 120px; }
-.yong .lbl, .lucky .lbl { font-size: 12px; color: var(--muted); }
-.yong .sub { font-size: 12px; color: var(--muted); }
-
-.gods { display: grid; gap: 14px; }
-.godrow { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
-.godhead { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.godhead b { font: 800 17px var(--display); }
-.godhead small { font: 12px var(--mono); color: var(--muted); }
-.godhead .lvl { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--muted); }
-.godrow[data-level="high"] .lvl { color: var(--seal); }
-.godrow .bar b { display: block; height: 100%; background: var(--ink); }
-.godrow p { margin: 0; max-width: 62ch; }
-.godrow .role { font-size: 12.5px; color: var(--muted); }
-
-.sals { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
-.sal { padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-.sal > b { font: 800 16px var(--display); margin-right: 6px; }
-.sal small { font: 12px var(--mono); color: var(--muted); }
-.sal p { margin: 4px 0 0; font-size: 14px; }
-.rel { display: grid; gap: 4px; justify-items: start; }
-.rel p { margin: 0; font-size: 14px; max-width: 62ch; }
-
-.strip { overflow-x: auto; padding-bottom: 6px; }
-.strip ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; }
-.dy { flex: 0 0 82px; display: grid; justify-items: center; gap: 3px; padding: 10px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); position: relative; }
-.dy.now { border: 2px solid var(--seal); }
-.dy .age { font: 12px var(--mono); color: var(--muted); }
-.dy .gz { display: grid; font: 800 24px/1.05 var(--display); text-align: center; }
-.dy .gz b { color: var(--e); }
-.dy .kr { font-size: 12px; color: var(--muted); }
-.dy .god { font-size: 12.5px; font-weight: 600; }
-.dy .nowtag { position: absolute; top: -9px; font: 600 10.5px/1 var(--body); background: var(--seal); color: var(--surface); padding: 3px 6px; border-radius: 3px; }
-.callout { padding: 12px 14px; border-left: 3px solid var(--seal); background: var(--surface); border-radius: 0 8px 8px 0; }
-.callout h4 { margin: 0 0 4px; font-size: 15px; }
-.callout p { margin: 0; font-size: 14.5px; }
-
-.years { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
-.yearcard { padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-.yhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.yhead b { font: 800 17px var(--display); }
-.yearcard p { margin: 6px 0 0; font-size: 14.5px; }
-
-.warnbox ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 64ch; }
-.lucky { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); gap: 8px; }
-.lucky > div { display: grid; gap: 3px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
-.lucky > div:first-child b { color: var(--e); }
-.lg-guide { background: var(--guide); }
-.lg-seal { background: var(--seal); }
-</style>
-
-<div class="wrap">
-  <header>
-    <div class="seal" aria-hidden="true"><span>觀</span><span>相</span><span>四</span><span>柱</span></div>
-    <div>
-      <h1>관상과 사주</h1>
-      <p>생년월일시로 사주팔자를 세우고, 얼굴 사진이 있으면 관상까지 엮어 풀이합니다. 좋은 점과 조심할 점을 함께 알려 드립니다.</p>
-    </div>
-  </header>
-
-  <div class="grid">
-    <section class="left" aria-label="입력">
-      <form class="panel" id="birthForm" novalidate>
-        <div class="field">
-          <label for="name">이름 <span class="fine">(선택)</span></label>
-          <input type="text" id="name" name="name" maxlength="20" autocomplete="off" placeholder="결과에 표시할 이름">
+  <!-- 시작 -->
+  <section class="screen intro" data-screen="intro">
+    <div class="cover">
+      <div>
+        <div class="talisman" aria-hidden="true">
+          <span class="corner">相由心生</span>
+          <span class="vt">얼굴팔자</span>
+          <span class="stamp"><span>相</span><span>命</span><span>四</span><span>柱</span></span>
         </div>
-        <div class="row">
-          <div class="field">
-            <span class="lbl">성별</span>
-            <div class="segctl" role="radiogroup" aria-label="성별">
-              <label><input type="radio" name="gender" value="M" id="gM" checked><span>남</span></label>
-              <label><input type="radio" name="gender" value="F" id="gF"><span>여</span></label>
-            </div>
-          </div>
-          <div class="field">
-            <span class="lbl">달력</span>
-            <div class="segctl" role="radiogroup" aria-label="달력">
-              <label><input type="radio" name="calendar" value="solar" id="calS" checked><span>양력</span></label>
-              <label><input type="radio" name="calendar" value="lunar" id="calL"><span>음력</span></label>
-            </div>
-          </div>
-          <label class="check" id="leapWrap" hidden><input type="checkbox" id="leap" name="leap"> 윤달</label>
-        </div>
-        <div class="field">
-          <span class="lbl">생년월일</span>
-          <div class="ymd">
-            <label>년<input type="number" id="year" name="year" inputmode="numeric" min="1910" max="2100" placeholder="1990"></label>
-            <label>월<input type="number" id="month" name="month" inputmode="numeric" min="1" max="12" placeholder="5"></label>
-            <label>일<input type="number" id="day" name="day" inputmode="numeric" min="1" max="31" placeholder="15"></label>
-          </div>
-        </div>
-        <div class="field">
-          <label for="time">태어난 시각</label>
-          <div class="row">
-            <input type="time" id="time" name="time" style="flex: 1 1 140px">
-            <label class="check"><input type="checkbox" id="timeUnknown" name="timeUnknown"> 모름</label>
-          </div>
-        </div>
-        <div class="field">
-          <label for="place">태어난 곳</label>
-          <select id="place" name="place"></select>
-          <span class="fine">태어난 곳의 경도로 실제 해의 시각을 보정합니다(서울은 시계보다 약 32분 늦음).</span>
-        </div>
-        <details class="adv">
-          <summary>세부 설정</summary>
-          <div class="field">
-            <label for="ziMode">밤 11시~자정 사이 출생</label>
-            <select id="ziMode" name="ziMode">
-              <option value="split">다음 날 일주로 봄 (전통 방식)</option>
-              <option value="same">당일 일주로 봄 (야자시 방식)</option>
-            </select>
-          </div>
-        </details>
-
-        <div class="photo">
-          <h2>얼굴 사진 <span class="fine">(선택)</span></h2>
-          <label class="consent" for="consent">
-            <input type="checkbox" id="consent">
-            <span><b>사진 분석에 동의합니다.</b> 사진은 이 기기의 브라우저 안에서만 분석되며 서버로 보내거나 저장하지 않습니다.</span>
-          </label>
-          <div class="row">
-            <button class="btn ghost" id="pick" type="button" disabled>사진 업로드</button>
-            <button class="btn ghost" id="shoot" type="button" disabled>사진 촬영</button>
-          </div>
-          <small id="photoHint">동의하면 사진을 올리거나 바로 찍을 수 있습니다. 사진 없이 사주만 봐도 됩니다.</small>
-          <input type="file" id="photo" accept="image/*" hidden>
-          <input type="file" id="cameraInput" accept="image/*" capture="user" hidden>
-          <div class="cam" id="cam" hidden>
-            <div class="cam-frame">
-              <video id="camVideo" playsinline muted></video>
-              <svg class="cam-guide" viewBox="0 0 100 105" preserveAspectRatio="none" aria-hidden="true">
-                <ellipse cx="50" cy="50" rx="27" ry="36" fill="none" stroke-width="0.8" stroke-dasharray="3 2"></ellipse>
-              </svg>
-            </div>
-            <p class="cam-tip">얼굴을 점선 안에 맞추고 정면을 봐 주세요.</p>
-            <div class="row">
-              <button class="btn" id="snap" type="button">찍기</button>
-              <button class="btn ghost" id="camCancel" type="button">취소</button>
-            </div>
-          </div>
-          <div class="photoDone" id="photoDone" hidden>
-            <canvas id="thumb" width="800" height="840" aria-label="분석한 얼굴"></canvas>
-            <div><p id="photoDoneText"></p><button class="btn ghost" id="removePhoto" type="button">사진 빼기</button></div>
-          </div>
-        </div>
-
-        <div class="submit">
-          <button class="btn big" type="submit">풀이 보기</button>
-          <button class="btn ghost" id="clearForm" type="button">입력 지우기</button>
-        </div>
-        <p class="status" id="status" role="status"></p>
-      </form>
-    </section>
-
-    <section class="right" id="result" aria-label="풀이">
-      <div class="result-head">
-        <div><span class="badge" id="resultBadge">예시</span></div>
-        <div class="tabs" role="tablist" aria-label="풀이 종류">
-          <button role="tab" id="tab-total" data-tab="total" aria-controls="panel-total" aria-selected="true">종합</button>
-          <button role="tab" id="tab-saju" data-tab="saju" aria-controls="panel-saju" aria-selected="false">사주</button>
-          <button role="tab" id="tab-face" data-tab="face" aria-controls="panel-face" aria-selected="false">관상</button>
-        </div>
+        <p class="tagline">얼굴에 드러난 것,<br>태어난 날에 적힌 것.</p>
       </div>
-      <div class="tabpanel" role="tabpanel" id="panel-total" aria-labelledby="tab-total"></div>
-      <div class="tabpanel" role="tabpanel" id="panel-saju" aria-labelledby="tab-saju" hidden></div>
-      <div class="tabpanel" role="tabpanel" id="panel-face" aria-labelledby="tab-face" hidden></div>
-    </section>
-  </div>
+    </div>
+    <div class="foot">
+      <button class="cta red" data-go="topic" type="button">내 팔자 보러 가기</button>
+      <button class="link" id="openLast" type="button" hidden>지난번 결과 다시 보기</button>
+      <p class="privacy">생일과 사진은 이 기기 밖으로 나가지 않아요.</p>
+    </div>
+  </section>
 
-  <footer>
-    <p>관상과 사주는 과학적으로 검증된 방법이 아닙니다. 재미로만 보시고, 채용·평가·건강 등 중요한 판단에 쓰지 마세요.</p>
-    <p>만세력: lunar-javascript (MIT). 얼굴 측정: face-api (MIT). 풀이 문구는 고전 상법·명리학의 일반 개념을 바탕으로 새로 쓴 문장입니다. 입력한 정보는 이 기기에만 저장됩니다.</p>
-  </footer>
+  <!-- 궁금한 것 -->
+  <section class="screen" data-screen="topic" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div></div>
+    <h1 class="q">요즘 제일<br>궁금한 게 뭐예요?</h1>
+    <p class="sub">고른 걸 결과 맨 앞에 크게 보여 드려요.</p>
+    <div class="body"><div class="opts" id="topicOpts"></div></div>
+    <div class="foot"><button class="cta" data-next type="button" disabled>다음</button></div>
+  </section>
+
+  <!-- 이름 -->
+  <section class="screen" data-screen="name" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div></div>
+    <h1 class="q">뭐라고<br>불러 드릴까요?</h1>
+    <p class="sub">이름이나 별명. 결과에만 쓰여요.</p>
+    <div class="body">
+      <input class="input" id="nameInput" type="text" maxlength="12" autocomplete="off" placeholder="예: 지호" enterkeyhint="next">
+    </div>
+    <div class="foot"><button class="cta" data-next type="button">다음</button></div>
+  </section>
+
+  <!-- 성별 -->
+  <section class="screen" data-screen="gender" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div></div>
+    <h1 class="q"><span class="who"></span>성별을<br>알려 주세요</h1>
+    <p class="sub">대운이 흐르는 방향이 성별에 따라 달라져요.</p>
+    <div class="body"><div class="opts two" id="genderOpts">
+      <button class="opt" type="button" data-v="M" aria-pressed="false">남자</button>
+      <button class="opt" type="button" data-v="F" aria-pressed="false">여자</button>
+    </div></div>
+    <div class="foot"><button class="cta" data-next type="button" disabled>다음</button></div>
+  </section>
+
+  <!-- 생년월일 -->
+  <section class="screen" data-screen="birth" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div></div>
+    <h1 class="q">언제<br>태어났어요?</h1>
+    <p class="sub">주민등록상 날짜가 실제와 다르면 실제 날짜로 넣어 주세요.</p>
+    <div class="body">
+      <div class="toggle" id="calToggle" role="group" aria-label="달력">
+        <button type="button" data-v="solar" aria-pressed="true">양력</button>
+        <button type="button" data-v="lunar" aria-pressed="false">음력</button>
+      </div>
+      <div class="ymd">
+        <div class="field"><label for="yIn">년</label><input class="input" id="yIn" type="number" inputmode="numeric" placeholder="1990" min="1910"></div>
+        <div class="field"><label for="mIn">월</label><input class="input" id="mIn" type="number" inputmode="numeric" placeholder="5" min="1" max="12"></div>
+        <div class="field"><label for="dIn">일</label><input class="input" id="dIn" type="number" inputmode="numeric" placeholder="15" min="1" max="31"></div>
+      </div>
+      <label class="check" id="leapWrap" hidden><input type="checkbox" id="leapIn"> 윤달이에요</label>
+      <p class="err" id="birthErr" role="alert"></p>
+    </div>
+    <div class="foot"><button class="cta" data-next type="button">다음</button></div>
+  </section>
+
+  <!-- 시각 -->
+  <section class="screen" data-screen="time" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div></div>
+    <h1 class="q">몇 시쯤<br>태어났어요?</h1>
+    <p class="sub">시간을 알면 말년운과 자녀운까지 볼 수 있어요.</p>
+    <div class="body">
+      <div class="tabs2" role="tablist" aria-label="시간 입력 방법">
+        <button role="tab" type="button" data-mode="exact" aria-selected="true">정확히 알아요</button>
+        <button role="tab" type="button" data-mode="sijin" aria-selected="false">대충 알아요</button>
+        <button role="tab" type="button" data-mode="unknown" aria-selected="false">몰라요</button>
+      </div>
+      <div data-pane="exact"><input class="input" id="timeIn" type="time" aria-label="태어난 시각"></div>
+      <div data-pane="sijin" hidden><div class="sijin" id="sijinGrid"></div></div>
+      <div data-pane="unknown" hidden><p class="sub" style="margin:0">괜찮아요. 시간 없이 세 기둥으로 볼게요. 시간이 들어가는 말년·자녀 쪽 풀이만 빠져요.</p></div>
+      <p class="err" id="timeErr" role="alert"></p>
+    </div>
+    <div class="foot"><button class="cta" data-next type="button">다음</button></div>
+  </section>
+
+  <!-- 출생지 -->
+  <section class="screen" data-screen="place" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div></div>
+    <h1 class="q">어디서<br>태어났어요?</h1>
+    <p class="sub">같은 시각이어도 서울과 부산은 해의 위치가 달라서, 태어난 곳 기준으로 시간을 맞춰요.</p>
+    <div class="body">
+      <div class="chips" id="placeChips"></div>
+      <details class="zi"><summary>밤 11시~자정 사이에 태어났다면</summary>
+        <div class="opts" id="ziOpts">
+          <button class="opt" type="button" data-v="split" aria-pressed="true"><span><b>다음 날로 보기</b><small>전통 방식, 대부분의 만세력</small></span><span class="mark"></span></button>
+          <button class="opt" type="button" data-v="same" aria-pressed="false"><span><b>그날로 보기</b><small>야자시 방식</small></span><span class="mark"></span></button>
+        </div>
+      </details>
+    </div>
+    <div class="foot"><button class="cta" data-next type="button">다음</button></div>
+  </section>
+
+  <!-- 사진 -->
+  <section class="screen" data-screen="photo" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b></b></div><button class="skip" type="button" id="skipPhoto">건너뛰기</button></div>
+    <h1 class="q">얼굴도<br>같이 볼까요?</h1>
+    <p class="sub">정면, 무표정, 앞머리가 눈썹을 덮지 않은 사진이 제일 잘 읽혀요.</p>
+    <div class="body">
+      <div class="camwrap" id="camwrap">
+        <video id="camVideo" playsinline muted hidden></video>
+        <canvas id="photoPreview" width="600" height="720" hidden></canvas>
+        <svg viewBox="0 0 100 120" preserveAspectRatio="none" aria-hidden="true" id="camGuide" hidden>
+          <path class="shade" fill-rule="evenodd" d="M0 0H100V120H0Z M50 18 a27 36 0 1 0 0.01 0Z"></path>
+          <ellipse class="oval" cx="50" cy="54" rx="27" ry="36"></ellipse>
+        </svg>
+        <div class="camempty" id="camEmpty"><div><b>相</b>사진을 올리거나 바로 찍어 주세요</div></div>
+      </div>
+      <label class="consent"><input type="checkbox" id="consent"><span><b>사진 분석에 동의해요.</b> 사진은 이 기기 안에서만 읽고 어디에도 보내거나 저장하지 않아요.</span></label>
+      <div class="row2" id="photoBtns">
+        <button class="ghost" id="pick" type="button" disabled>앨범에서 고르기</button>
+        <button class="ghost" id="shoot" type="button" disabled>지금 찍기</button>
+      </div>
+      <div class="row2" id="camBtns" hidden>
+        <button class="cta red" id="snap" type="button">찰칵</button>
+        <button class="ghost" id="camCancel" type="button">취소</button>
+      </div>
+      <button class="link" id="retake" type="button" hidden>다른 사진으로 바꾸기</button>
+      <p class="err" id="photoErr" role="alert"></p>
+      <input type="file" id="photoFile" accept="image/*" hidden>
+      <input type="file" id="cameraFile" accept="image/*" capture="user" hidden>
+    </div>
+    <div class="foot"><button class="cta red" id="goAnalyze" type="button" hidden>이 얼굴로 풀이 보기</button></div>
+  </section>
+
+  <!-- 분석 -->
+  <section class="loading" data-screen="loading" hidden aria-live="polite">
+    <div class="stage" id="stage"></div>
+    <ol class="lsteps" id="lsteps"></ol>
+  </section>
+
+  <!-- 결과 -->
+  <section class="screen result" data-screen="result" hidden>
+    <div class="topbar"><button class="back" type="button" aria-label="처음으로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><span class="count" id="deckCount"></span></div>
+    <div class="deck" id="deck" tabindex="0" aria-label="풀이 카드. 옆으로 넘겨 보세요"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="resultfoot">
+      <button class="ghost" id="openSheet" type="button">전체 풀이</button>
+      <button class="cta red" id="share" type="button">이미지로 저장</button>
+    </div>
+    <button class="navbtn prev" id="prevCard" type="button" aria-label="이전 카드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="navbtn next" id="nextCard" type="button" aria-label="다음 카드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
+  </section>
+
+  <!-- 전체 풀이 -->
+  <section class="sheet" id="sheet" hidden aria-label="전체 풀이">
+    <div class="inner">
+      <div class="head"><h2>전체 풀이</h2><button class="link" id="closeSheet" type="button">닫기</button></div>
+      <div class="tabs2 two" role="tablist" id="sheetTabs">
+        <button role="tab" type="button" data-tab="saju" aria-selected="true">사주</button>
+        <button role="tab" type="button" data-tab="face" aria-selected="false">관상</button>
+      </div>
+      <div class="panel2" id="sheetBody"></div>
+      <p class="fine endnote">사주와 관상은 과학적으로 검증된 방법이 아니에요. 재미로 보고, 중요한 결정은 스스로 내리세요. 만세력 lunar-javascript, 얼굴 인식 face-api (모두 MIT 라이선스).</p>
+    </div>
+  </section>
 </div>
-
-<script type="module" src="js/app.js?v=6"></script>
+<div class="toast" id="toast" hidden role="status"></div>
+<script type="module" src="js/app.js?v=8"></script>
+</body>
+</html>

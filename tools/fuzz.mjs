@@ -1,13 +1,14 @@
 // 무작위 입력으로 풀이 문장을 만들어 빈 값(undefined·NaN 등)이나 오류가 없는지 확인: node tools/fuzz.mjs
-import { computePillars, yearPillar } from '../js/saju/calendar.js?v=5';
-import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=5';
-import { combine } from '../js/combined.js?v=5';
-import { renderSaju } from '../js/view-saju.js?v=5';
-import { renderTotal } from '../js/view-total.js?v=5';
-import { renderFace } from '../js/view-face.js?v=5';
-import { computeMetrics } from '../js/metrics.js?v=5';
-import { interpret } from '../js/rules.js?v=5';
-import { SAMPLE_FACE } from '../js/sample-face.js?v=5';
+import { computePillars, yearPillar } from '../js/saju/calendar.js?v=8';
+import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=8';
+import { combine } from '../js/combined.js?v=8';
+import { renderSaju } from '../js/view-saju.js?v=8';
+import { renderTotal } from '../js/view-total.js?v=8';
+import { renderFace } from '../js/view-face.js?v=8';
+import { computeMetrics } from '../js/metrics.js?v=8';
+import { interpret } from '../js/rules.js?v=8';
+import { SAMPLE_FACE } from '../js/sample-face.js?v=8';
+import { buildCards } from '../js/deck.js?v=8';
 let seed = 7; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
 const jitterFace = () => SAMPLE_FACE.map(p => ({ x: p.x + (rnd() - .5) * 14, y: p.y + (rnd() - .5) * 14 }));
 const bad = /undefined|NaN|null|\[object/;
@@ -27,7 +28,9 @@ for (let i = 0; i < N; i++) {
     const face = withFace ? { bitmap: null, points: jitterFace(), metrics: null, result: null } : null;
     if (face) { face.metrics = computeMetrics(face.points); face.result = interpret(face.metrics); }
     const total = combine(saju, face?.result || null, years);
-    const html = renderTotal(total, { hasFace: !!face, name: '' }) + renderSaju(saju, chart, total.years) + (face ? renderFace(face) : '');
+    const topic = ['love', 'money', 'work', 'year', 'self'][Math.floor(rnd() * 5)];
+    const cards = buildCards({ input: { ...input, topic, name: rnd() < .5 ? '지호' : '' }, chart, saju, face, total, years: total.years, faceImage: null });
+    const html = renderTotal(total, { hasFace: !!face, name: '' }) + renderSaju(saju, chart, total.years) + (face ? renderFace(face) : '') + cards.map(c => c.html).join('');
     const m = html.match(bad);
     if (m) { fails++; if (fails < 5) console.log('BAD', m[0], JSON.stringify(input), html.slice(Math.max(0, m.index - 120), m.index + 40)); }
     n++;

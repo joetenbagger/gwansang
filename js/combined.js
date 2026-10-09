@@ -1,5 +1,5 @@
 // combined.js — 사주와 관상을 엮어 종합 풀이를 만듭니다 (순수 함수)
-import { EL, GENERATES, CONTROLS, GROUPS } from './saju/data.js?v=6';
+import { EL, GENERATES, CONTROLS, GROUPS } from './saju/data.js?v=8';
 
 const FACE_EL = { wood: 'wood', fire: 'fire', earth: 'earth', metal: 'metal', water: 'water' };
 
@@ -49,14 +49,14 @@ export function combine(saju, face, years) {
     const eye = featureOf(face, 'eyeShape');
     sections.push({
       id: 'nature', title: '타고난 기질',
-      text: `${dm.image}(${dm.char}) 일간입니다. ${dm.text}` + (eye ? ` 관상에서 보이는 눈은 ‘${eye.band.tag}’입니다. ${eye.band.text}` : ''),
+      text: `${dm.text}` + (eye ? ` 관상에서 보이는 눈은 ‘${eye.band.tag}’입니다. ${eye.band.text}` : ''),
       caution: dm.caution + (eye ? ' ' + eye.band.caution : ''),
     });
   }
   // 2. 재물
   {
     const j = g('jaeseong'); const nose = featureOf(face, 'noseWidth');
-    const lvl = { high: '재성이 강합니다.', mid: '재성이 적당한 편입니다.', low: '재성이 약한 편입니다.', none: '사주에 재성이 거의 드러나지 않습니다.' }[j.level];
+    const lvl = { high: '재물을 뜻하는 기운(재성)이 강합니다.', mid: '재물을 뜻하는 기운(재성)이 알맞게 있습니다.', low: '재물을 뜻하는 기운(재성)이 약한 편입니다.', none: '사주에 재물을 뜻하는 기운(재성)이 거의 드러나지 않습니다.' }[j.level];
     sections.push({
       id: 'money', title: '재물',
       text: lvl + (j.text ? ' ' + j.text : '') + (nose ? ` 관상에서 재물을 보는 콧볼은 ‘${nose.band.tag}’입니다. ${nose.band.text}` : ''),
@@ -68,7 +68,7 @@ export function combine(saju, face, years) {
     const d = saju.dominant;
     sections.push({
       id: 'work', title: '일과 적성',
-      text: `사주에서 가장 강한 기운은 ${d.name}(${d.hanja})입니다. ${GROUPS[d.id].role.split('— ')[1]}의 힘이 커서 ${saju.career} 쪽이 잘 맞습니다.` + (face ? ` 얼굴은 ${face.face.primary.shape}의 ${face.face.primary.name}입니다. ${face.face.primary.text.split('. ').slice(1).join('. ')}` : ''),
+      text: `사주에서 가장 강한 기운은 ${(([x, y]) => josa(x, '과', '와') + ' ' + josa(y, '을', '를'))(GROUPS[d.id].about.split('·'))} 뜻하는 ${d.name}(${d.hanja})입니다. 그래서 ${saju.career} 쪽이 잘 맞습니다.` + (face ? ` 얼굴은 ${face.face.primary.shape}의 ${face.face.primary.name}입니다. ${face.face.primary.text.split('. ').slice(1).join('. ')}` : ''),
       caution: (d.caution || '') + (face ? ' ' + face.face.primary.caution : ''),
     });
   }

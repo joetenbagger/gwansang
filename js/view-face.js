@@ -1,6 +1,6 @@
 // view-face.js — 관상: 측정선 그리기와 풀이 화면
-import { SAMPLE_SIZE } from './sample-face.js?v=6';
-import { esc, fmt, tok } from './util.js?v=6';
+import { SAMPLE_SIZE } from './sample-face.js?v=8';
+import { esc, fmt, tok } from './util.js?v=8';
 
 /** face = { bitmap|null, points, metrics, result, isSample } */
 export function drawFace(canvas, face) {
@@ -89,7 +89,7 @@ function gauge(f) {
     </div>`;
 }
 
-export const caution = text => text ? `<p class="caution"><b>조심할 점</b> ${esc(text)}</p>` : '';
+export const caution = text => text ? `<p class="but"><span>다만</span>${esc(text)}</p>` : '';
 
 export function renderFace(face) {
   const { result, metrics } = face;
@@ -136,7 +136,7 @@ export function renderFace(face) {
     </div>
     <div class="standouts">
       <h3>가장 두드러진 특징</h3>
-      <ol>${result.standouts.map(f => `<li><span class="palace">${esc(f.hanja)}</span> <b>${esc(f.band.tag)}</b><span>${esc(f.band.text)}</span><span class="caution"><b>조심할 점</b> ${esc(f.band.caution)}</span></li>`).join('')}</ol>
+      <ol>${result.standouts.map(f => `<li><span class="palace">${esc(f.hanja)}</span> <b>${esc(f.band.tag)}</b><span>${esc(f.band.text)}</span><span class="but"><span>다만</span>${esc(f.band.caution)}</span></li>`).join('')}</ol>
     </div>
     ${groupHtml}
     <div class="group">

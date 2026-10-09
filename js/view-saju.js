@@ -1,8 +1,8 @@
 // view-saju.js — 사주 풀이 화면
-import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=6';
-import { STRENGTH_CUTS } from './saju/analyze.js?v=6';
-import { esc, pct } from './util.js?v=6';
-import { caution } from './view-face.js?v=6';
+import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=8';
+import { STRENGTH_CUTS } from './saju/analyze.js?v=8';
+import { esc, pct } from './util.js?v=8';
+import { caution } from './view-face.js?v=8';
 
 const COLS = [['hour', '시주', '時'], ['day', '일주', '日'], ['month', '월주', '月'], ['year', '년주', '年']];
 const TONE = { good: ['순풍', 'good'], neutral: ['보통', 'neutral'], caution: ['주의', 'bad'] };
@@ -106,7 +106,7 @@ export function renderSaju(saju, chart, years) {
   <section class="block">
     <h3>일간의 힘 <small>身強·身弱</small></h3>
     ${strengthMeter(saju)}
-    <p><b>${esc(saju.strength.tag)}</b> — ${esc(saju.strength.text)} ${saju.strength.monthSupports ? '태어난 달이 일간을 돕습니다(득령).' : '태어난 달이 일간을 돕지 않습니다(실령).'}</p>
+    <p><b>${esc(saju.strength.tag)}</b>. ${esc(saju.strength.text)} ${saju.strength.monthSupports ? '태어난 달이 일간을 돕습니다(득령).' : '태어난 달이 일간을 돕지 않습니다(실령).'}</p>
     ${caution(saju.strength.caution)}
   </section>
 
@@ -128,7 +128,7 @@ export function renderSaju(saju, chart, years) {
         <div class="godhead"><b>${g.name}</b><small>${g.hanja}</small>${elTag(g.el)}
           <span class="lvl">${{ high: '강함', mid: '보통', low: '약함', none: '없음' }[g.level]}</span></div>
         <span class="bar"><b style="width:${Math.min(100, g.share * 250)}%"></b></span>
-        <p class="role">${esc(g.role)}</p>
+        <p class="role">${esc(g.role)}: ${esc(g.about)}</p>
         ${g.text ? `<p>${esc(g.text)}</p>${caution(g.caution)}` : ''}
       </div>`).join('')}
     </div>
