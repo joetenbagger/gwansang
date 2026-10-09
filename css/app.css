@@ -83,6 +83,10 @@ button { font: inherit; color: inherit; }
 }
 .input::placeholder { color: var(--ink-3); opacity: .55; font-weight: 500; }
 .input:focus { outline: none; border-bottom-color: var(--seal); }
+.hm { display: grid; grid-template-columns: 1.9fr 1fr; gap: 12px; }
+select.input { font-size: 19px; padding-right: 26px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23241A10' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat: no-repeat; background-position: right 4px center; }
+.readout { margin: 12px 0 0; font-size: 15px; color: var(--ink-2); min-height: 1.5em; }
+.readout b { color: var(--ink); }
 .ymd { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; }
 .toggle { display: inline-grid; grid-auto-flow: column; border: 1.5px solid var(--ink); border-radius: 3px; overflow: hidden; justify-self: start; align-self: flex-start; }
 .toggle button { border: 0; background: transparent; padding: 9px 20px; font-size: 15px; font-weight: 600; cursor: pointer; }

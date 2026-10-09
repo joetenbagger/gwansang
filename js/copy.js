@@ -21,18 +21,18 @@ export const TOPICS = [
 
 // 12시진: 한국 시계 기준 대략 구간(서울 경도 보정 반영)과 계산에 쓸 가운데 시각
 export const SIJIN = [
-  { b: '子', ko: '자시', range: '밤 11:30 ~ 1:30', mid: '00:30', animal: '쥐' },
-  { b: '丑', ko: '축시', range: '새벽 1:30 ~ 3:30', mid: '02:30', animal: '소' },
-  { b: '寅', ko: '인시', range: '새벽 3:30 ~ 5:30', mid: '04:30', animal: '호랑이' },
-  { b: '卯', ko: '묘시', range: '아침 5:30 ~ 7:30', mid: '06:30', animal: '토끼' },
-  { b: '辰', ko: '진시', range: '아침 7:30 ~ 9:30', mid: '08:30', animal: '용' },
-  { b: '巳', ko: '사시', range: '오전 9:30 ~ 11:30', mid: '10:30', animal: '뱀' },
-  { b: '午', ko: '오시', range: '낮 11:30 ~ 1:30', mid: '12:30', animal: '말' },
-  { b: '未', ko: '미시', range: '오후 1:30 ~ 3:30', mid: '14:30', animal: '양' },
-  { b: '申', ko: '신시', range: '오후 3:30 ~ 5:30', mid: '16:30', animal: '원숭이' },
-  { b: '酉', ko: '유시', range: '저녁 5:30 ~ 7:30', mid: '18:30', animal: '닭' },
-  { b: '戌', ko: '술시', range: '저녁 7:30 ~ 9:30', mid: '20:30', animal: '개' },
-  { b: '亥', ko: '해시', range: '밤 9:30 ~ 11:30', mid: '22:30', animal: '돼지' },
+  { b: '子', ko: '자시', range: '23:30 ~ 01:30 (밤)', mid: '00:30', animal: '쥐' },
+  { b: '丑', ko: '축시', range: '01:30 ~ 03:30 (새벽)', mid: '02:30', animal: '소' },
+  { b: '寅', ko: '인시', range: '03:30 ~ 05:30 (새벽)', mid: '04:30', animal: '호랑이' },
+  { b: '卯', ko: '묘시', range: '05:30 ~ 07:30 (아침)', mid: '06:30', animal: '토끼' },
+  { b: '辰', ko: '진시', range: '07:30 ~ 09:30 (아침)', mid: '08:30', animal: '용' },
+  { b: '巳', ko: '사시', range: '09:30 ~ 11:30 (낮)', mid: '10:30', animal: '뱀' },
+  { b: '午', ko: '오시', range: '11:30 ~ 13:30 (낮)', mid: '12:30', animal: '말' },
+  { b: '未', ko: '미시', range: '13:30 ~ 15:30 (낮)', mid: '14:30', animal: '양' },
+  { b: '申', ko: '신시', range: '15:30 ~ 17:30 (낮)', mid: '16:30', animal: '원숭이' },
+  { b: '酉', ko: '유시', range: '17:30 ~ 19:30 (저녁)', mid: '18:30', animal: '닭' },
+  { b: '戌', ko: '술시', range: '19:30 ~ 21:30 (밤)', mid: '20:30', animal: '개' },
+  { b: '亥', ko: '해시', range: '21:30 ~ 23:30 (밤)', mid: '22:30', animal: '돼지' },
 ];
 
 export const LOADING_STEPS = {
@@ -58,3 +58,11 @@ export const TOPIC_TITLE = {
   year: (_, y) => `${y}년은 이렇게 흘러가요`,
   self: () => '나는 이런 사람',
 };
+
+// 시각 표기: 24시간제 옆에 오전/오후와 낮/밤을 같이 적어 헷갈리지 않게
+export function hourLabel(h) {
+  const ampm = h < 12 ? '오전' : '오후';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  const when = h === 0 ? '밤, 자정' : h <= 4 ? '밤, 새벽' : h <= 6 ? '새벽' : h === 12 ? '낮, 정오' : h <= 17 ? '낮' : h <= 19 ? '저녁' : '밤';
+  return { short: `${String(h).padStart(2, '0')}시`, full: `${String(h).padStart(2, '0')}시 · ${ampm} ${h12}시 (${when})`, ampm, h12, when };
+}

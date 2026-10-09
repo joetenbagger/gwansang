@@ -1,17 +1,17 @@
 // app.js — 화면 흐름. 질문 하나씩 → 분석 연출 → 결과 카드.
-import { computeMetrics } from './metrics.js?v=8';
-import { interpret } from './rules.js?v=8';
-import { detectLandmarks } from './detector.js?v=8';
-import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=8';
-import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=8';
-import { combine } from './combined.js?v=8';
-import { drawFace, renderFace } from './view-face.js?v=8';
-import { renderSaju } from './view-saju.js?v=8';
-import { buildCards } from './deck.js?v=8';
-import { runLoading } from './loading.js?v=8';
-import { makeShareImage, shareOrSave } from './share.js?v=8';
-import { TOPICS, SIJIN } from './copy.js?v=8';
-import { esc } from './util.js?v=8';
+import { computeMetrics } from './metrics.js?v=9';
+import { interpret } from './rules.js?v=9';
+import { detectLandmarks } from './detector.js?v=9';
+import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=9';
+import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=9';
+import { combine } from './combined.js?v=9';
+import { drawFace, renderFace } from './view-face.js?v=9';
+import { renderSaju } from './view-saju.js?v=9';
+import { buildCards } from './deck.js?v=9';
+import { runLoading } from './loading.js?v=9';
+import { makeShareImage, shareOrSave } from './share.js?v=9';
+import { TOPICS, SIJIN, hourLabel } from './copy.js?v=9';
+import { esc } from './util.js?v=9';
 
 const $ = id => document.getElementById(id);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -120,7 +120,20 @@ function setTimeMode(m) {
   $('timeErr').textContent = '';
 }
 $$('[data-screen="time"] [role="tab"]').forEach(t => t.addEventListener('click', () => setTimeMode(t.dataset.mode)));
-$('timeIn').addEventListener('input', e => { input.time = e.target.value; $('timeErr').textContent = ''; });
+// 시·분 선택 칸 (휴대폰 기본 시간 선택기는 기기마다 동작이 달라서 직접 만든 선택 칸을 씀)
+$('hourIn').innerHTML = '<option value="">시 선택</option>' + Array.from({ length: 24 }, (_, h) => `<option value="${h}">${hourLabel(h).full}</option>`).join('');
+$('minIn').innerHTML = '<option value="">분</option>' + Array.from({ length: 60 }, (_, m) => `<option value="${m}">${String(m).padStart(2, '0')}분</option>`).join('');
+function readTime() {
+  const h = $('hourIn').value, m = $('minIn').value;
+  input.time = h !== '' ? `${String(h).padStart(2, '0')}:${String(m === '' ? 0 : m).padStart(2, '0')}` : '';
+  $('timeErr').textContent = '';
+  if (h === '') { $('timeReadout').textContent = ''; return; }
+  const L = hourLabel(+h);
+  const mm = m === '' ? 0 : +m;
+  const sj = SIJIN[Math.floor(((+h * 60 + mm + 30) % 1440) / 120)];
+  $('timeReadout').innerHTML = `<b>${L.ampm} ${L.h12}시${mm ? ` ${mm}분` : ''}</b>, ${L.when.split(',')[0]}에 태어났어요 · ${sj.ko}(${sj.b}時)`;
+}
+['input', 'change'].forEach(ev => { $('hourIn').addEventListener(ev, readTime); $('minIn').addEventListener(ev, readTime); });
 
 // 출생지
 $('placeChips').innerHTML = PLACES.map(p => `<button type="button" data-v="${p.id}" aria-pressed="false">${esc(p.id === 'none' ? '해외·잘 모름' : p.name.replace(/·.*/, ''))}</button>`).join('');
@@ -146,7 +159,8 @@ function validate(step) {
     return !msg;
   }
   if (step === 'time') {
-    if (input.timeMode === 'exact' && !input.time) { $('timeErr').textContent = '시각을 넣거나, 대충 알면 옆 탭에서 골라 주세요.'; return false; }
+    if (input.timeMode === 'exact') readTime();
+    if (input.timeMode === 'exact' && !input.time) { $('timeErr').textContent = '몇 시인지 골라 주세요. 정확히 모르면 옆의 "대충 알아요"를 눌러 주세요.'; return false; }
     if (input.timeMode === 'sijin' && !input.sijin) { $('timeErr').textContent = '태어난 시간대를 하나 골라 주세요.'; return false; }
   }
   return true;
@@ -364,7 +378,7 @@ function restoreForm() {
   $('yIn').value = input.year; $('mIn').value = input.month; $('dIn').value = input.day;
   $$('#calToggle button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === input.calendar)));
   $('leapWrap').hidden = input.calendar !== 'lunar'; $('leapIn').checked = !!input.leap;
-  $('timeIn').value = input.time || '';
+  if (input.time) { const [hh, mm] = input.time.split(':'); $('hourIn').value = String(+hh); $('minIn').value = String(+mm); readTime(); }
   $$('#sijinGrid button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.b === input.sijin)));
   setTimeMode(input.timeMode || 'exact');
   $$('[data-screen] [data-next]').forEach(b => { b.disabled = false; });

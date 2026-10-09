@@ -6,7 +6,7 @@
 let ready = null;
 
 async function load(onProgress) {
-  const faceapi = await import('../vendor/face-api.esm.js?v=8');
+  const faceapi = await import('../vendor/face-api.esm.js?v=9');
   const tf = faceapi.tf;
   // WebGL을 먼저 쓰고, 안 되면 CPU로 계산합니다.
   let ok = false;
