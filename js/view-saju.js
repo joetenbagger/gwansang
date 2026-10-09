@@ -1,8 +1,8 @@
 // view-saju.js — 사주 풀이 화면
-import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=11';
-import { STRENGTH_CUTS } from './saju/analyze.js?v=11';
-import { esc, pct } from './util.js?v=11';
-import { caution } from './view-face.js?v=11';
+import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=12';
+import { STRENGTH_CUTS } from './saju/analyze.js?v=12';
+import { esc, pct } from './util.js?v=12';
+import { caution } from './view-face.js?v=12';
 
 const COLS = [['hour', '시주', '時'], ['day', '일주', '日'], ['month', '월주', '月'], ['year', '년주', '年']];
 const TONE = { good: ['순풍', 'good'], neutral: ['보통', 'neutral'], caution: ['주의', 'bad'] };

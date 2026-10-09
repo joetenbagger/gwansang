@@ -1,6 +1,7 @@
 // loading.js — 분석 중 연출. 계산은 이미 끝난 상태에서 결과를 한 단계씩 보여 줍니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=11';
-import { LOADING_STEPS } from './copy.js?v=11';
+import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=12';
+import { LOADING_STEPS } from './copy.js?v=12';
+import { predictMbti } from './mbti.js?v=12';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 250) : ms));
@@ -147,6 +148,35 @@ async function faceScene(stage, face) {
   await wait(450);
 }
 
+// MBTI: 사주가 말하는 네 글자가 돌다가 멈추고, 실제 MBTI와 맞춰 봄
+async function mbtiScene(stage, saju, actual) {
+  const pred = predictMbti(saju).type;
+  const pairs = [['E', 'I'], ['S', 'N'], ['T', 'F'], ['J', 'P']];
+  stage.innerHTML = `<div class="fade" style="display:grid;gap:18px;width:100%;text-align:center">
+    <small style="color:#9F8E6A">사주가 말하는 MBTI</small>
+    <div class="slots" id="mp">${pairs.map(() => '<span></span>').join('')}</div>
+    ${actual ? `<small style="color:#9F8E6A">내 MBTI</small><div class="slots" id="ma">${[...actual].map(c => `<span style="color:#9F8E6A">${c}</span>`).join('')}</div>` : ''}
+  </div>`;
+  const ps = [...stage.querySelectorAll('#mp span')];
+  let k = 0;
+  const timer = reduce ? null : setInterval(() => { ps.forEach((s, i) => { if (!s.classList.contains('set')) s.textContent = pairs[i][(k + i) % 2]; }); k++; }, 90);
+  await wait(500);
+  for (let i = 0; i < 4; i++) {
+    ps[i].textContent = pred[i]; ps[i].classList.add('set'); ps[i].dataset.el = 'earth';
+    await wait(260);
+  }
+  if (timer) clearInterval(timer);
+  if (actual) {
+    const as = [...stage.querySelectorAll('#ma span')];
+    for (let i = 0; i < 4; i++) {
+      const same = actual[i] === pred[i];
+      as[i].classList.add('set'); as[i].dataset.el = same ? 'wood' : 'fire';
+      await wait(180);
+    }
+  }
+  await wait(700);
+}
+
 // 4) 얼굴과 사주 겹치기 (사진이 없으면 일간만)
 async function mergeScene(stage, saju, face) {
   const dm = saju.dayStem;
@@ -171,17 +201,18 @@ async function mergeScene(stage, saju, face) {
   await wait(600);
 }
 
-export async function runLoading(root, { chart, saju, face }) {
+export async function runLoading(root, { chart, saju, face, input }) {
   const stage = root.querySelector('#stage');
   const list = root.querySelector('#lsteps');
-  const steps = ['pillars', 'elements', ...(face && !face.isSample ? ['face', 'merge'] : ['merge'])];
-  const labels = { ...LOADING_STEPS, merge: face && !face.isSample ? LOADING_STEPS.merge : LOADING_STEPS.done };
+  const steps = ['pillars', 'elements', 'mbti', ...(face && !face.isSample ? ['face', 'merge'] : ['merge'])];
+  const labels = { ...LOADING_STEPS, mbti: input?.mbti ? 'MBTI와 맞춰 보는 중' : '사주로 MBTI를 점치는 중', merge: face && !face.isSample ? LOADING_STEPS.merge : LOADING_STEPS.done };
   list.innerHTML = steps.map(s => `<li data-s="${s}"><i></i>${labels[s]}</li>`).join('');
   const mark = (s, cls) => { const li = list.querySelector(`[data-s="${s}"]`); li.classList.remove('on'); li.classList.add(cls); };
   for (const s of steps) {
     mark(s, 'on');
     if (s === 'pillars') await pillarsScene(stage, chart);
     if (s === 'elements') await elementsScene(stage, saju);
+    if (s === 'mbti') await mbtiScene(stage, saju, input?.mbti);
     if (s === 'face') await faceScene(stage, face);
     if (s === 'merge') await mergeScene(stage, saju, face && !face.isSample ? face : null);
     mark(s, 'done');

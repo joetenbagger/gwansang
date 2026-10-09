@@ -106,6 +106,17 @@ select.input { font-size: 19px; padding-right: 26px; background-image: url("data
 .sijin .r { font-size: 11px; color: var(--ink-2); letter-spacing: -0.03em; }
 .sijin button[aria-pressed="true"] { background: var(--ink); color: var(--paper-2); }
 .sijin button[aria-pressed="true"] .r { color: var(--paper-3); }
+.mbtigrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.mbtigrid button { border: 1.5px solid var(--ink); background: var(--paper-2); border-radius: 3px; height: 54px; font: 700 16px var(--body); letter-spacing: .04em; cursor: pointer; }
+.mbtigrid button[aria-pressed="true"] { background: var(--ink); color: var(--paper-2); }
+.quizlink { justify-self: start; align-self: flex-start; margin-top: 4px; }
+.quiz { display: grid; gap: 14px; padding: 14px; border: 1.5px dashed var(--ink-3); background: var(--paper-2); }
+.quiz .qq { display: grid; gap: 6px; }
+.quiz .qq p { margin: 0; font-weight: 700; font-size: 15px; }
+.quiz .qq div { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.quiz .qq button { border: 1.5px solid var(--ink); background: transparent; border-radius: 3px; padding: 9px 8px; font-size: 14px; cursor: pointer; text-align: left; line-height: 1.35; }
+.quiz .qq button[aria-pressed="true"] { background: var(--ink); color: var(--paper-2); }
+.quiz .res { margin: 0; font-size: 14px; color: var(--ink-2); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chips button { border: 1.5px solid var(--ink); background: var(--paper-2); border-radius: 999px; padding: 9px 15px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .chips button[aria-pressed="true"] { background: var(--ink); color: var(--paper-2); }
@@ -227,6 +238,20 @@ details.zi .opts { margin-top: 10px; }
 .area { display: grid; grid-template-columns: 40px 1fr; gap: 10px; padding-top: 10px; border-top: 1px dashed var(--rule); }
 .area b { font: 400 18px var(--display); color: var(--seal); }
 .area p { font-size: 15px; }
+.mbtitag { font-size: 15px; color: var(--ink-2); }
+.mbtitag b { color: var(--ink); letter-spacing: .04em; margin-right: 2px; }
+.axes { display: grid; gap: 12px; margin: 4px 0; }
+.ax { display: grid; grid-template-columns: 44px 1fr 44px; gap: 10px; align-items: center; }
+.ax .l, .ax .r { font: 700 20px var(--body); color: var(--ink-3); display: grid; justify-items: center; line-height: 1.1; }
+.ax .l small, .ax .r small { font-size: 11px; font-weight: 500; }
+.ax .on { color: var(--ink); }
+.ax .track { position: relative; height: 8px; background: var(--paper-3); border-radius: 4px; }
+.ax .track b { position: absolute; top: -5px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--seal); border: 2px solid var(--paper-2); }
+.ax .track i { position: absolute; top: -4px; width: 16px; height: 16px; margin-left: -8px; border: 2.5px solid var(--ink); border-radius: 3px; background: transparent; }
+.ax.diff .track { background: repeating-linear-gradient(90deg, var(--paper-3) 0 6px, transparent 6px 10px); }
+.legend2 { font-size: 12.5px !important; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+.legend2 .dotp { width: 12px; height: 12px; border-radius: 50%; background: var(--seal); display: inline-block; }
+.legend2 .dota { width: 11px; height: 11px; border: 2px solid var(--ink); border-radius: 2px; display: inline-block; margin-left: 10px; }
 .flow { width: 100%; height: auto; display: block; overflow: visible; }
 .yearrow { display: grid; gap: 6px; padding-top: 12px; border-top: 1px dashed var(--rule); }
 .yearrow .yh { display: flex; justify-content: space-between; align-items: center; gap: 8px; }

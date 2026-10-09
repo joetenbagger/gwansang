@@ -1,11 +1,11 @@
 // topic.js — 첫 화면에서 고른 질문에 대한 심층 카드(4장)
-import { Solar } from '../vendor/lunar.mjs?v=11';
-import { STEMS, BRANCHES, EL, GROUPS, tenGod, TEN_GODS, groupOfElement, elementOfGroup, CLASH, BRANCH_COMBINE, isPair, triadOf, PEACH, generatedBy } from './saju/data.js?v=11';
-import { yearPillar } from './saju/calendar.js?v=11';
-import { analyzeYear } from './saju/analyze.js?v=11';
-import { ATTRACT, FITS, LOVE_STYLE, INDUSTRY, WORK_STYLE, GOD_AREA, HABITS, NATAL_SOCIAL, GOD_DO } from './topic-texts.js?v=11';
-import { CAREER } from './saju/texts.js?v=11';
-import { esc } from './util.js?v=11';
+import { Solar } from '../vendor/lunar.mjs?v=12';
+import { STEMS, BRANCHES, EL, GROUPS, tenGod, TEN_GODS, groupOfElement, elementOfGroup, CLASH, BRANCH_COMBINE, isPair, triadOf, PEACH, generatedBy } from './saju/data.js?v=12';
+import { yearPillar } from './saju/calendar.js?v=12';
+import { analyzeYear } from './saju/analyze.js?v=12';
+import { ATTRACT, FITS, LOVE_STYLE, INDUSTRY, WORK_STYLE, GOD_AREA, HABITS, NATAL_SOCIAL, GOD_DO } from './topic-texts.js?v=12';
+import { CAREER } from './saju/texts.js?v=12';
+import { esc } from './util.js?v=12';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };

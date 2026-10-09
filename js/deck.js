@@ -1,8 +1,9 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=11';
-import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=11';
-import { esc } from './util.js?v=11';
-import { topicCards } from './topic.js?v=11';
+import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=12';
+import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=12';
+import { esc } from './util.js?v=12';
+import { topicCards } from './topic.js?v=12';
+import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=12';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -61,6 +62,46 @@ function sectionCard(total, id, kicker, title) {
   return card(id, kicker, `<h2>${title}</h2><p class="lead">${esc(firstSentence(s.text))}</p><p>${esc(s.text.slice(firstSentence(s.text).length).trim())}</p>${but(s.caution)}`);
 }
 
+function axisBars(cmp) {
+  return `<div class="axes">${cmp.rows.map(r => `
+    <div class="ax${r.same === false ? ' diff' : ''}">
+      <span class="l${r.letter === r.a ? ' on' : ''}">${r.a}<small>${LETTER_KO[r.a]}</small></span>
+      <span class="track"><b style="left:${(1 - r.pA) * 100}%"></b>${r.actual ? `<i style="left:${r.actual === r.a ? 8 : 92}%" title="실제"></i>` : ''}</span>
+      <span class="r${r.letter === r.b ? ' on' : ''}">${r.b}<small>${LETTER_KO[r.b]}</small></span>
+    </div>`).join('')}</div>`;
+}
+
+function mbtiCards({ input, saju }) {
+  const pred = predictMbti(saju);
+  const actual = input.mbti;
+  const cmp = compareMbti(pred, actual);
+  const dm = saju.dayStem;
+  const out = [];
+  out.push(card('mbti', '사주 × MBTI', `
+    <h2>사주로 보면 <em>${pred.type}</em></h2>
+    ${axisBars(cmp)}
+    <p class="legend2"><span class="dotp"></span>사주가 기운 쪽${actual ? '<span class="dota"></span>실제 MBTI' : ''}</p>
+    <p>${esc(MBTI_LINE[pred.type])} 오행과 십신의 비율로 계산한 결과예요.</p>
+    ${actual ? `<p class="lead">실제 MBTI는 ${actual}${input.mbtiFromQuiz ? '(간이 테스트)' : ''}. 네 글자 중 ${cmp.same}개가 같아요.</p>` : '<p class="hint">MBTI를 알려 주면 타고난 나와 지금의 나를 비교해 드려요.</p>'}`));
+  if (actual) {
+    const diffs = cmp.rows.filter(r => !r.same), sames = cmp.rows.filter(r => r.same);
+    out.push(card('mbti', '타고난 나 vs 지금의 나', `
+      <h2><em>${cmp.match.title}</em></h2>
+      <p class="lead">${esc(cmp.match.text)}</p>
+      ${diffs.map(r => `<div class="yearrow"><div class="yh"><b>${r.letter} → ${r.actual}</b><span class="tone caution">다름</span></div><p>${esc(r.text)}</p></div>`).join('')}
+      ${sames.map(r => `<div class="yearrow"><div class="yh"><b>${r.letter} = ${r.actual}</b><span class="tone good">같음</span></div><p>${esc(r.text)}</p></div>`).join('')}`));
+  }
+  const t = actual || pred.type;
+  const [m1, m2] = goodMatches(t);
+  out.push(card('mbti', `${t} × ${dm}`, `
+    <h2><em>${MBTI_ADJ[t]}</em> ${DAY_NOUN[dm]}</h2>
+    <p class="lead">${esc(MBTI_LINE[t])}</p>
+    <p>사주로는 ${esc(TRAIT[dm])}이에요. ${actual && cmp.same >= 3 ? '두 결과가 같은 쪽을 가리켜서 성격이 한결같고 겉과 속이 비슷해요.' : '두 결과가 조금 달라서, 상황에 따라 전혀 다른 모습이 나와요. 처음 본 사람과 오래 본 사람이 나를 다르게 기억해요.'}</p>
+    <div class="kv"><div><small>잘 맞는 MBTI</small><b>${m1}, ${m2}</b></div><div><small>사주로 잘 맞는 기운</small><b>${EL[saju.yongsin.el].ko}(${EL[saju.yongsin.el].hanja}) 기운의 사람</b></div></div>
+    ${but(saju.dayMaster.caution.split('. ')[0] + '.')}`));
+  return out;
+}
+
 export function buildCards({ input, chart, saju, face, total, years, faceImage }) {
   const name = input.name || '';
   const dm = saju.dayStem;
@@ -73,6 +114,7 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
     <div class="bigglyph" data-el="${dmEl}"><span class="g">${dm}</span>
       <span class="meta"><b>${NICK[dm]}</b><span>${STEMS[dm].ko}${EL[dmEl].ko} 일간</span><span>${STRENGTH_FRIENDLY[saju.strength.key]}</span></span></div>
     <h2><em>${TRAIT[dm]}</em></h2>
+    ${input.mbti ? `<p class="mbtitag"><b>${input.mbti}</b> · ${MBTI_ADJ[input.mbti]} ${DAY_NOUN[dm]}</p>` : ''}
     ${mini8(saju)}
     <p>${esc(saju.dayMaster.text.split('. ').slice(1, 3).join('. '))}${face ? ` 얼굴은 ${esc(face.result.face.primary.shape)}의 ${face.result.face.primary.name}(${face.result.face.primary.hanja})이에요.` : ''}</p>
     <p class="hint">옆으로 넘겨 보세요 →</p>`));
@@ -83,6 +125,9 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
   for (const tc of topicCards({ input, saju, chart, face, years, total })) {
     cards.push(card('topic', `궁금했던 것 · ${tc.kicker}`, `<h2>${tc.title}</h2>${tc.body}`));
   }
+
+  // 2-1. MBTI
+  for (const c of mbtiCards({ input, saju })) cards.push(c);
 
   // 3. 여덟 글자와 다섯 기운
   const top = ELEMENTS.reduce((a, e) => (saju.powerPct[e] > saju.powerPct[a] ? e : a));

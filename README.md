@@ -1,6 +1,6 @@
 # 얼굴팔자
 
-궁금한 것 → 이름 → 성별 → 생년월일 → 시각 → 출생지 → 사진 순서로 하나씩 묻고, 분석 연출을 거쳐 결과를 카드로 보여 주는 사주·관상 앱입니다.
+궁금한 것 → 이름 → 성별 → 생년월일 → 시각 → 출생지 → MBTI → 사진 순서로 하나씩 묻고, 분석 연출을 거쳐 결과를 카드로 보여 주는 사주·관상 앱입니다.
 입력한 정보와 사진은 브라우저 안에서만 처리되며 서버로 보내지 않습니다.
 
 사이트: https://joetenbagger.github.io/gwansang/
@@ -14,6 +14,7 @@
 | `js/loading.js` | 분석 중 연출(여덟 글자 맞추기, 오행, 얼굴 선, 합치기) |
 | `js/deck.js` | 결과 카드 묶음 |
 | `js/topic.js` · `topic-texts.js` | 고른 질문 심층 카드 4장(연애·돈·일·올해·나) |
+| `js/mbti.js` | 사주로 MBTI 추정, 실제 MBTI 비교, 간이 테스트 |
 | `js/share.js` | 공유용 이미지 만들기 |
 | `js/copy.js` | 화면 문구, 시진 표 |
 | `js/view-saju.js` · `view-face.js` | 전체 풀이(사주·관상 상세) |
@@ -25,7 +26,7 @@
 | `js/detector.js` | 사진 → 얼굴 랜드마크 68점 (face-api) |
 | `js/metrics.js` · `rules.js` | 관상 측정과 풀이 문구 |
 | `vendor/` | lunar-javascript(만세력), face-api(얼굴 인식) — 모두 MIT |
-| `tools/` | 분포 점검(`calibrate-saju.mjs`), 무작위 검사(`fuzz.mjs`), 캐시 버전 올리기(`bump-version.sh`) |
+| `tools/` | 분포 점검(`calibrate-saju.mjs`), 무작위 검사(`fuzz.mjs`), MBTI 보정(`calibrate-mbti.mjs`), 캐시 버전 올리기(`bump-version.sh`) |
 
 계산(`saju/*`, `combined.js`, `metrics.js`, `rules.js`)은 화면과 분리된 순수 함수라 앱으로 옮겨도 그대로 씁니다.
 
@@ -57,3 +58,7 @@
     npm i @capacitor/core @capacitor/cli @capacitor/ios @capacitor/android
     npx cap init "관상과 사주" com.example.gwansang --web-dir .
     npx cap add ios && npx cap add android
+
+## 사주로 본 MBTI
+
+오행 비율과 십신으로 네 축(E/I, S/N, T/F, J/P) 점수를 계산합니다. 축끼리 겹치는 근거를 걷어 내고(잔차화), 무작위 생일 분포의 중앙값으로 보정해서 16유형이 고르게(약 5.6~7.3%) 나오게 맞췄습니다. 근거와 계수는 `js/mbti.js` 맨 위에 있고, 기준을 바꾸면 `node tools/calibrate-mbti.mjs 6000 check`로 다시 보정합니다.

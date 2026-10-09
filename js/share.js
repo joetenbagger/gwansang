@@ -1,6 +1,7 @@
 // share.js — 공유용 한 장 이미지 (1080×1440)
-import { STEMS, EL, ELEMENTS } from './saju/data.js?v=11';
-import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=11';
+import { STEMS, EL, ELEMENTS } from './saju/data.js?v=12';
+import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=12';
+import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=12';
 
 const C = {
   paper: '#EED89A', card: '#F7EBC4', ink: '#241A10', ink2: '#5A4A36', rule: '#C9AE68', seal: '#B92D1A',
@@ -46,6 +47,12 @@ export async function makeShareImage({ input, saju, face, years }) {
   g.fillStyle = C.ink2; g.font = `500 32px ${SANS}`;
   g.fillText(`${STEMS[dm].ko}${EL[el].ko} 일간 · ${STRENGTH_FRIENDLY[saju.strength.key]}`, 500, 385);
   if (face) g.fillText(`얼굴 ${face.result.face.primary.name}(${face.result.face.primary.hanja})`, 500, 435);
+  const pm = predictMbti(saju).type;
+  g.fillText(input.mbti ? `MBTI ${input.mbti} · 사주로는 ${pm}` : `사주로 본 MBTI ${pm}`, 500, face ? 485 : 435);
+  if (input.mbti) {
+    g.fillStyle = C.seal; g.font = `700 32px ${SANS}`;
+    g.fillText(`"${MBTI_ADJ[input.mbti]} ${DAY_NOUN[dm]}"`, 500, face ? 540 : 490);
+  }
 
   // 한 줄
   g.fillStyle = C.ink; g.font = `400 64px ${SERIF}`;

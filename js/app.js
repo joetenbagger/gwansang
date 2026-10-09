@@ -1,26 +1,27 @@
 // app.js — 화면 흐름. 질문 하나씩 → 분석 연출 → 결과 카드.
-import { computeMetrics } from './metrics.js?v=11';
-import { interpret } from './rules.js?v=11';
-import { detectLandmarks } from './detector.js?v=11';
-import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=11';
-import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=11';
-import { combine } from './combined.js?v=11';
-import { drawFace, renderFace } from './view-face.js?v=11';
-import { renderSaju } from './view-saju.js?v=11';
-import { buildCards } from './deck.js?v=11';
-import { runLoading } from './loading.js?v=11';
-import { makeShareImage, shareOrSave } from './share.js?v=11';
-import { TOPICS, SIJIN, hourLabel } from './copy.js?v=11';
-import { esc } from './util.js?v=11';
+import { computeMetrics } from './metrics.js?v=12';
+import { interpret } from './rules.js?v=12';
+import { detectLandmarks } from './detector.js?v=12';
+import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=12';
+import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=12';
+import { combine } from './combined.js?v=12';
+import { drawFace, renderFace } from './view-face.js?v=12';
+import { renderSaju } from './view-saju.js?v=12';
+import { buildCards } from './deck.js?v=12';
+import { runLoading } from './loading.js?v=12';
+import { makeShareImage, shareOrSave } from './share.js?v=12';
+import { TOPICS, SIJIN, hourLabel } from './copy.js?v=12';
+import { TYPES, QUIZ } from './mbti.js?v=12';
+import { esc } from './util.js?v=12';
 
 const $ = id => document.getElementById(id);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const STORE = 'eolgul.input.v1';
-const FLOW = ['intro', 'topic', 'name', 'gender', 'birth', 'time', 'place', 'photo'];
+const FLOW = ['intro', 'topic', 'name', 'gender', 'birth', 'time', 'place', 'mbti', 'photo'];
 
 const input = {
   topic: null, name: '', gender: null, calendar: 'solar', leap: false, year: '', month: '', day: '',
-  timeMode: 'exact', time: '', sijin: null, place: 'seoul', ziMode: 'split',
+  timeMode: 'exact', time: '', sijin: null, place: 'seoul', ziMode: 'split', mbti: null, mbtiFromQuiz: false,
 };
 let face = null;      // 분석한 얼굴
 let result = null;    // 마지막 풀이
@@ -139,6 +140,28 @@ function readTime() {
 $('placeChips').innerHTML = PLACES.map(p => `<button type="button" data-v="${p.id}" aria-pressed="false">${esc(p.id === 'none' ? '해외·잘 모름' : p.name.replace(/·.*/, ''))}</button>`).join('');
 const syncPlace = () => $$('#placeChips button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === input.place)));
 $$('#placeChips button').forEach(b => b.addEventListener('click', () => { input.place = b.dataset.v; syncPlace(); }));
+
+// MBTI
+$('mbtiGrid').innerHTML = TYPES.map(t => `<button type="button" data-v="${t}" aria-pressed="false">${t}</button>`).join('');
+function syncMbti() {
+  $$('#mbtiGrid button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === input.mbti)));
+  document.querySelector('[data-screen="mbti"] [data-next]').disabled = !input.mbti;
+}
+$$('#mbtiGrid button').forEach(b => b.addEventListener('click', () => { input.mbti = b.dataset.v; input.mbtiFromQuiz = false; syncMbti(); }));
+$('skipMbti').addEventListener('click', () => { input.mbti = null; syncMbti(); save(); next(); });
+const quizAns = [null, null, null, null];
+$('quiz').innerHTML = QUIZ.map((q, i) => `<div class="qq"><p>${i + 1}. ${q.q}</p><div>
+  <button type="button" data-i="${i}" data-l="${q.a[1]}" aria-pressed="false">${q.a[0]}</button>
+  <button type="button" data-i="${i}" data-l="${q.b[1]}" aria-pressed="false">${q.b[0]}</button></div></div>`).join('') + '<p class="res" id="quizRes">네 문제에 다 답하면 유형이 나와요.</p>';
+$('openQuiz').addEventListener('click', () => { $('quiz').hidden = !$('quiz').hidden; });
+$$('#quiz .qq button').forEach(b => b.addEventListener('click', () => {
+  const i = +b.dataset.i; quizAns[i] = b.dataset.l;
+  $$(`#quiz button[data-i="${i}"]`).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  if (quizAns.every(Boolean)) {
+    input.mbti = quizAns.join(''); input.mbtiFromQuiz = true; syncMbti();
+    $('quizRes').innerHTML = `간이 결과는 <b>${input.mbti}</b>예요. 정식 검사와 다를 수 있어요.`;
+  }
+}));
 
 function validate(step) {
   if (step === 'birth') {
@@ -373,7 +396,7 @@ $('openLast').addEventListener('click', () => {
 });
 
 function restoreForm() {
-  syncTopic(); syncGender(); syncZi(); syncPlace();
+  syncTopic(); syncGender(); syncZi(); syncPlace(); syncMbti();
   $('nameInput').value = input.name || '';
   $('yIn').value = input.year; $('mIn').value = input.month; $('dIn').value = input.day;
   $$('#calToggle button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === input.calendar)));
