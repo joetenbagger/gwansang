@@ -1,6 +1,6 @@
 // view-face.js — 관상: 측정선 그리기와 풀이 화면
-import { SAMPLE_SIZE } from './sample-face.js?v=9';
-import { esc, fmt, tok } from './util.js?v=9';
+import { SAMPLE_SIZE } from './sample-face.js?v=10';
+import { esc, fmt, tok } from './util.js?v=10';
 
 /** face = { bitmap|null, points, metrics, result, isSample } */
 export function drawFace(canvas, face) {

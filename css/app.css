@@ -219,6 +219,14 @@ details.zi .opts { margin-top: 10px; }
 .kv small { font-size: 12px; color: var(--ink-2); }
 .kv b { font-size: 16px; }
 .kv .wide { grid-column: span 2; }
+.tbars { display: grid; gap: 8px; }
+.tb { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; font-size: 14px; }
+.tb .bar { height: 10px; background: var(--paper-3); display: block; }
+.tb .bar b { display: block; height: 100%; background: var(--ink-3); }
+.tb.top .nm { font-weight: 700; color: var(--seal); } .tb.top .bar b { background: var(--seal); }
+.area { display: grid; grid-template-columns: 40px 1fr; gap: 10px; padding-top: 10px; border-top: 1px dashed var(--rule); }
+.area b { font: 400 18px var(--display); color: var(--seal); }
+.area p { font-size: 15px; }
 .flow { width: 100%; height: auto; display: block; overflow: visible; }
 .yearrow { display: grid; gap: 6px; padding-top: 12px; border-top: 1px dashed var(--rule); }
 .yearrow .yh { display: flex; justify-content: space-between; align-items: center; gap: 8px; }

@@ -12,7 +12,8 @@
 | `index.html` · `css/app.css` | 화면 구성과 디자인(부적 종이 모티프) |
 | `js/app.js` | 질문 단계 흐름, 사진·촬영, 뒤로가기 |
 | `js/loading.js` | 분석 중 연출(여덟 글자 맞추기, 오행, 얼굴 선, 합치기) |
-| `js/deck.js` | 결과 카드(고른 질문을 맨 앞에) |
+| `js/deck.js` | 결과 카드 묶음 |
+| `js/topic.js` · `topic-texts.js` | 고른 질문 심층 카드 4장(연애·돈·일·올해·나) |
 | `js/share.js` | 공유용 이미지 만들기 |
 | `js/copy.js` | 화면 문구, 시진 표 |
 | `js/view-saju.js` · `view-face.js` | 전체 풀이(사주·관상 상세) |

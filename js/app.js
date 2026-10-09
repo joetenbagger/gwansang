@@ -1,17 +1,17 @@
 // app.js — 화면 흐름. 질문 하나씩 → 분석 연출 → 결과 카드.
-import { computeMetrics } from './metrics.js?v=9';
-import { interpret } from './rules.js?v=9';
-import { detectLandmarks } from './detector.js?v=9';
-import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=9';
-import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=9';
-import { combine } from './combined.js?v=9';
-import { drawFace, renderFace } from './view-face.js?v=9';
-import { renderSaju } from './view-saju.js?v=9';
-import { buildCards } from './deck.js?v=9';
-import { runLoading } from './loading.js?v=9';
-import { makeShareImage, shareOrSave } from './share.js?v=9';
-import { TOPICS, SIJIN, hourLabel } from './copy.js?v=9';
-import { esc } from './util.js?v=9';
+import { computeMetrics } from './metrics.js?v=10';
+import { interpret } from './rules.js?v=10';
+import { detectLandmarks } from './detector.js?v=10';
+import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=10';
+import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=10';
+import { combine } from './combined.js?v=10';
+import { drawFace, renderFace } from './view-face.js?v=10';
+import { renderSaju } from './view-saju.js?v=10';
+import { buildCards } from './deck.js?v=10';
+import { runLoading } from './loading.js?v=10';
+import { makeShareImage, shareOrSave } from './share.js?v=10';
+import { TOPICS, SIJIN, hourLabel } from './copy.js?v=10';
+import { esc } from './util.js?v=10';
 
 const $ = id => document.getElementById(id);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];

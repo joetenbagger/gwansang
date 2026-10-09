@@ -1,7 +1,8 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=9';
-import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=9';
-import { esc } from './util.js?v=9';
+import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=10';
+import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=10';
+import { esc } from './util.js?v=10';
+import { topicCards } from './topic.js?v=10';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -76,34 +77,11 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
     <p>${esc(saju.dayMaster.text.split('. ').slice(1, 3).join('. '))}${face ? ` 얼굴은 ${esc(face.result.face.primary.shape)}의 ${face.result.face.primary.name}(${face.result.face.primary.hanja})이에요.` : ''}</p>
     <p class="hint">옆으로 넘겨 보세요 →</p>`));
 
-  // 2. 고른 질문
+  // 2. 고른 질문: 심층 카드 4장
   const t = topic.id;
   const yr = years[0];
-  if (t === 'year') {
-    const cur = saju.daYun.find(d => d.current);
-    cards.push(card('topic', `궁금했던 것 · ${topic.label}`, `
-      <h2>${TOPIC_TITLE.year(name, yr.year)}</h2>
-      <div class="yearrow"><div class="yh"><b>${yr.year} ${yr.stemKo}${yr.branchKo}년</b>${toneTag(yr.tone)}</div><p>${esc(yr.text)}</p>${but(yr.caution)}</div>
-      ${cur ? `<div class="yearrow"><div class="yh"><b>지금 10년 · ${STEMS[cur.stem].ko}${BRANCHES[cur.branch].ko} 대운</b>${toneTag(cur.tone)}</div><p>${esc(cur.theme)}</p></div>` : ''}
-      <div class="yearrow"><div class="yh"><b>${years[1].year} ${years[1].stemKo}${years[1].branchKo}년</b>${toneTag(years[1].tone)}</div><p>${esc(years[1].theme)}</p></div>`));
-  } else if (t === 'love') {
-    const s = total.sections.find(x => x.id === 'people');
-    const peach = saju.shinsal.find(x => x.key === 'peach');
-    const spouseStar = input.gender === 'F' ? saju.groups.find(g => g.id === 'gwanseong') : saju.groups.find(g => g.id === 'jaeseong');
-    const starLine = { high: '사주에 배우자를 뜻하는 기운이 강해 인연이 일찍, 또는 자주 찾아오는 편이에요.', mid: '배우자를 뜻하는 기운이 알맞게 있어 인연이 자연스럽게 이어지는 편이에요.', low: '배우자를 뜻하는 기운이 약한 편이라 인연을 직접 찾아 나서야 잘 만나요.', none: '사주에 배우자를 뜻하는 기운이 잘 보이지 않아요. 늦게 만나거나, 운에서 들어올 때 인연이 생기는 편이에요.' }[spouseStar.level];
-    cards.push(card('topic', `궁금했던 것 · ${topic.label}`, `
-      <h2>${TOPIC_TITLE.love(name)}</h2>
-      <p class="lead">${esc(starLine)}</p>
-      <p>${esc(s.text)}</p>
-      ${peach ? `<p>도화살이 있어 사람을 끄는 매력이 있어요. ${esc(peach.caution)}</p>` : ''}
-      ${but(s.caution)}
-      <p class="hint">${yr.year}년 흐름: ${TONE[yr.tone]} · ${esc(yr.god)}의 해</p>`));
-  } else {
-    const map = { money: 'money', work: 'work', self: 'nature' };
-    const c = sectionCard(total, map[t], `궁금했던 것 · ${topic.label}`, TOPIC_TITLE[t](name, yr.year));
-    c.id = 'topic';
-    if (t === 'self') c.html = c.html.replace('</h2>', `</h2><p class="lead">${esc(saju.strength.text.split('. ')[0])}.</p>`);
-    cards.push(c);
+  for (const tc of topicCards({ input, saju, chart, face, years, total })) {
+    cards.push(card('topic', `궁금했던 것 · ${tc.kicker}`, `<h2>${tc.title}</h2>${tc.body}`));
   }
 
   // 3. 여덟 글자와 다섯 기운
