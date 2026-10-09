@@ -380,6 +380,16 @@ details.raw table { font-size: 12.5px; text-align: left; }
 .matchrow .side b.mb { font: 700 30px/1.2 var(--body); letter-spacing: .04em; color: var(--ink); }
 .cardcta { margin-top: 6px; }
 
+/* 초대 */
+.talisman.invite .vt { font-size: clamp(110px, 32vw, 150px); letter-spacing: 0; writing-mode: horizontal-tb; color: var(--e, var(--ink)); }
+.tagline b { color: var(--seal); font-weight: 400; }
+.sheet.bottom { top: auto; max-height: 92vh; border-top: 2px solid var(--seal); box-shadow: 0 -12px 40px rgba(36,26,16,.25); animation: up .25s ease both; }
+.sheet.bottom .inner { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); display: grid; gap: 14px; }
+.sheet.bottom .sub { margin: 0; }
+.linkbox { font-size: 13px; height: 44px; font-weight: 500; }
+.sheetdim { position: fixed; inset: 0; background: rgba(22,18,13,.4); z-index: 29; }
+.cardcta + .cardcta { margin-top: 0; }
+
 /* 닮은 유명인 */
 .celebs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .celebs li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--rule); }

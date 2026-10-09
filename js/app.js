@@ -1,22 +1,24 @@
 // app.js — 화면 흐름. 질문 하나씩 → 분석 연출 → 결과 카드.
-import { computeMetrics } from './metrics.js?v=14';
-import { interpret } from './rules.js?v=14';
-import { detectLandmarks } from './detector.js?v=14';
-import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=14';
-import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=14';
-import { combine } from './combined.js?v=14';
-import { drawFace, renderFace } from './view-face.js?v=14';
-import { renderSaju } from './view-saju.js?v=14';
-import { buildCards } from './deck.js?v=14';
-import { runLoading } from './loading.js?v=14';
-import { makeShareImage, shareOrSave } from './share.js?v=14';
-import { TOPICS, SIJIN, hourLabel } from './copy.js?v=14';
-import { TYPES, QUIZ } from './mbti.js?v=14';
-import { esc } from './util.js?v=14';
-import { gunghap } from './gunghap.js?v=14';
-import { buildGhCards } from './gh-deck.js?v=14';
-import { runGhLoading } from './loading.js?v=14';
-import { makeGhShareImage } from './share.js?v=14';
+import { computeMetrics } from './metrics.js?v=15';
+import { interpret } from './rules.js?v=15';
+import { detectLandmarks } from './detector.js?v=15';
+import { PLACES, computePillars, yearPillar } from './saju/calendar.js?v=15';
+import { analyzeSaju, analyzeYear } from './saju/analyze.js?v=15';
+import { combine } from './combined.js?v=15';
+import { drawFace, renderFace } from './view-face.js?v=15';
+import { renderSaju } from './view-saju.js?v=15';
+import { buildCards } from './deck.js?v=15';
+import { runLoading } from './loading.js?v=15';
+import { makeShareImage, shareOrSave } from './share.js?v=15';
+import { TOPICS, SIJIN, hourLabel } from './copy.js?v=15';
+import { TYPES, QUIZ } from './mbti.js?v=15';
+import { esc } from './util.js?v=15';
+import { gunghap } from './gunghap.js?v=15';
+import { buildGhCards } from './gh-deck.js?v=15';
+import { runGhLoading } from './loading.js?v=15';
+import { makeGhShareImage } from './share.js?v=15';
+import { encodeInvite, inviteUrl, readInviteFromLocation } from './invite.js?v=15';
+import { STEMS } from './saju/data.js?v=15';
 
 const $ = id => document.getElementById(id);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -53,7 +55,7 @@ window.addEventListener('popstate', e => {
   const target = e.state?.screen || 'intro';
   if (target === 'loading') return;
   stopCamera();
-  const fallback = (target === 'result' && !result) ? 'intro' : (target === 'ghResult' && !ghResult) ? 'gh1' : target;
+  const fallback = (target === 'result' && !result) ? 'intro' : (target === 'ghResult' && !ghResult) ? 'gh1' : (target === 'invite' && !invite) ? 'intro' : target;
   show(fallback, { back: true, push: false });
 });
 
@@ -453,6 +455,7 @@ function openGh() {
 $('openGhIntro').addEventListener('click', openGh);
 $('deck').addEventListener('click', e => { if (e.target.closest('[data-open-gh]')) openGh(); });
 $('ghAgain').addEventListener('click', () => {
+  if (invite) { leaveInvite(); Object.assign(gh, { name: '', year: '', month: '', day: '', hour: '', mbti: '' }); ['ghName', 'ghY', 'ghM', 'ghD'].forEach(id => { $(id).value = ''; }); openGh(); return; }
   Object.assign(gh, { name: '', year: '', month: '', day: '', hour: '', mbti: '' });
   ['ghName', 'ghY', 'ghM', 'ghD'].forEach(id => { $(id).value = ''; });
   $('ghHour').value = ''; $('ghMbti').value = '';
@@ -476,13 +479,21 @@ $('ghGo').addEventListener('click', async () => {
   if (msg) { $('ghErr').textContent = msg; return; }
   const sajuB = analyzeSaju(chartB);
   const yr = new Date().getFullYear();
-  const A = { name: input.name || '나', saju: result.saju, mbti: input.mbti, years: result.years };
-  const B = { name: gh.name || '상대', saju: sajuB, mbti: gh.mbti || null, years: [analyzeYear(sajuB, yearPillar(yr)), analyzeYear(sajuB, yearPillar(yr + 1))] };
+  const yearsB = [analyzeYear(sajuB, yearPillar(yr)), analyzeYear(sajuB, yearPillar(yr + 1))];
+  let A, B;
+  if (invite) {
+    // 링크로 들어온 경우: 화면에서 입력한 사람이 나(A), 링크를 보낸 사람이 상대(B)
+    A = { name: gh.name || '나', saju: sajuB, mbti: gh.mbti || null, years: yearsB };
+    B = { name: invite.name || '상대', saju: invite.saju, mbti: invite.mbti, years: invite.years };
+  } else {
+    A = { name: input.name || '나', saju: result.saju, mbti: input.mbti, years: result.years };
+    B = { name: gh.name || '상대', saju: sajuB, mbti: gh.mbti || null, years: yearsB };
+  }
   const g = gunghap(A, B, gh.rel);
   ghResult = { A, B, g };
   show('loading');
   try { await runGhLoading(document.querySelector('[data-screen="loading"]'), ghResult); } catch (e) { console.error(e); }
-  $('ghDeck').innerHTML = buildGhCards(A, B, g).join('');
+  $('ghDeck').innerHTML = buildGhCards(A, B, g, { invited: !!invite }).join('');
   $('ghDots').innerHTML = [...$('ghDeck').children].map(() => '<i></i>').join('');
   $('ghDeck').scrollLeft = 0; ghIndex = 0; ghDotsUpdate();
   show('ghResult');
@@ -509,9 +520,107 @@ $('ghShare').addEventListener('click', async () => {
   finally { btn.disabled = false; btn.textContent = '이미지로 저장'; }
 });
 
+// ---------- 궁합 링크 보내기 ----------
+let inviteRel = 'friend';
+const dim = document.createElement('div'); dim.className = 'sheetdim'; dim.hidden = true; document.body.appendChild(dim);
+function openInviteSheet() {
+  if (!result) { toast('먼저 내 팔자를 봐 주세요.'); return; }
+  $('inviteLink').hidden = true;
+  $('inviteSheet').hidden = false; dim.hidden = false;
+}
+function closeInviteSheet() { $('inviteSheet').hidden = true; dim.hidden = true; }
+$('closeInvite').addEventListener('click', closeInviteSheet);
+dim.addEventListener('click', closeInviteSheet);
+$$('#invRelOpts .opt').forEach(o => o.addEventListener('click', () => {
+  inviteRel = o.dataset.v;
+  $$('#invRelOpts .opt').forEach(x => x.setAttribute('aria-pressed', String(x === o)));
+}));
+function makeInviteUrl() {
+  const token = encodeInvite({ ...toCalcInput(result.input), name: result.input.name, mbti: result.input.mbti }, inviteRel);
+  return inviteUrl(token);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const box = $('inviteLink'); box.hidden = false; box.value = text; box.select();
+    try { return document.execCommand('copy'); } catch { return false; }
+  }
+}
+$('copyInvite').addEventListener('click', async () => {
+  const url = makeInviteUrl();
+  toast(await copyText(url) ? '링크를 복사했어요. 카톡이나 메시지에 붙여 넣어 보내세요.' : '아래 링크를 길게 눌러 복사해 주세요.');
+});
+$('sendInvite').addEventListener('click', async () => {
+  const url = makeInviteUrl();
+  const who = result.input.name ? `${result.input.name}님이` : '친구가';
+  const text = `${who} 궁합을 보자고 했어요. 내 생일만 넣으면 둘의 궁합이 나와요.`;
+  if (navigator.share) {
+    try { await navigator.share({ title: '얼굴팔자 궁합', text, url }); closeInviteSheet(); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  toast(await copyText(`${text}\n${url}`) ? '링크를 복사했어요. 카톡이나 메시지에 붙여 넣어 보내세요.' : '아래 링크를 길게 눌러 복사해 주세요.');
+});
+document.addEventListener('click', e => { if (e.target.closest('[data-send-invite]')) openInviteSheet(); });
+
+// ---------- 링크를 받은 사람 ----------
+let invite = null;
+function setupInvite(data) {
+  try {
+    const chart = computePillars({ ...data, gender: data.gender });
+    const saju = analyzeSaju(chart);
+    const yr = new Date().getFullYear();
+    invite = { ...data, saju, years: [analyzeYear(saju, yearPillar(yr)), analyzeYear(saju, yearPillar(yr + 1))] };
+  } catch { invite = null; return false; }
+  const el = STEMS[invite.saju.dayStem].el;
+  $('invGlyph').textContent = invite.saju.dayStem;
+  $('invGlyph').style.setProperty('--e', `var(--${el})`);
+  $('invName').textContent = invite.name || '친구';
+  $('invRel').textContent = { lover: '연인 궁합', friend: '친구 궁합', work: '동료 궁합' }[invite.rel];
+  // 궁합 입력 화면을 "내 정보" 기준으로 바꿈
+  gh.rel = invite.rel;
+  $$('#ghRelOpts .opt').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === gh.rel)));
+  $('ghTitle').innerHTML = `${esc(invite.name || '친구')}님과의 궁합,<br>내 정보부터 알려 주세요`;
+  $('ghSub').textContent = '내 생일은 이 기기 안에서만 계산하고, 상대에게 보내지 않아요.';
+  $('ghNameLabel').textContent = '내 이름';
+  $('ghGenderLabel').textContent = '내 성별';
+  return true;
+}
+function leaveInvite() {
+  invite = null;
+  history.replaceState(history.state, '', location.pathname + location.search);
+  $('ghTitle').innerHTML = '누구와<br>궁합을 볼까요?';
+  $('ghSub').textContent = '상대의 생일도 이 기기 안에서만 계산하고 저장하지 않아요.';
+  $('ghNameLabel').textContent = '상대 이름';
+  $('ghGenderLabel').textContent = '상대 성별';
+}
+$('invStart').addEventListener('click', () => show('gh1'));
+$('invSkip').addEventListener('click', () => { leaveInvite(); show('topic'); });
+// 궁합 본 뒤 "나도 내 팔자 보기": 방금 넣은 정보를 이어받아 시작
+$('ghDeck').addEventListener('click', e => {
+  if (!e.target.closest('[data-start-own]')) return;
+  Object.assign(input, {
+    name: gh.name, gender: gh.gender, calendar: gh.calendar, leap: gh.leap, year: gh.year, month: gh.month, day: gh.day,
+    timeMode: gh.hour === '' ? 'unknown' : 'exact', time: gh.hour === '' ? '' : `${String(gh.hour).padStart(2, '0')}:00`,
+    mbti: gh.mbti || null, topic: null,
+  });
+  restoreForm();
+  $$('[data-screen="topic"] [data-next]').forEach(b => { b.disabled = true; });
+  leaveInvite();
+  show('topic');
+});
+
 // ---------- 시작 ----------
 const saved = loadSaved();
 if (saved) { Object.assign(input, saved); restoreForm(); }
 syncPlace();
-history.replaceState({ screen: 'intro' }, '');
-show('intro', { push: false });
+const rawHash = location.hash;
+const invited = readInviteFromLocation();
+if (invited && setupInvite(invited)) {
+  history.replaceState({ screen: 'invite' }, '');
+  show('invite', { push: false });
+} else {
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  history.replaceState({ screen: 'intro' }, '');
+  show('intro', { push: false });
+  if (/^#g1\./.test(rawHash)) toast('궁합 링크가 잘못됐거나 일부가 잘렸어요. 링크 전체를 다시 받아 주세요.');
+}

@@ -1,7 +1,7 @@
 // share.js — 공유용 한 장 이미지 (1080×1440)
-import { STEMS, EL, ELEMENTS } from './saju/data.js?v=14';
-import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=14';
-import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=14';
+import { STEMS, EL, ELEMENTS } from './saju/data.js?v=15';
+import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=15';
+import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=15';
 
 const C = {
   paper: '#EED89A', card: '#F7EBC4', ink: '#241A10', ink2: '#5A4A36', rule: '#C9AE68', seal: '#B92D1A',

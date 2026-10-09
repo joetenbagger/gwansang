@@ -1,10 +1,10 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=14';
-import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=14';
-import { esc } from './util.js?v=14';
-import { topicCards } from './topic.js?v=14';
-import { findCelebs } from './celeb-match.js?v=14';
-import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=14';
+import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=15';
+import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=15';
+import { esc } from './util.js?v=15';
+import { topicCards } from './topic.js?v=15';
+import { findCelebs } from './celeb-match.js?v=15';
+import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=15';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -199,7 +199,9 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
   cards.push(card('gh', '이제 둘이 볼 차례', `
     <h2>친구랑, 그 사람이랑<br><em>궁합</em>은 어떨까?</h2>
     <p>상대의 생일만 넣으면 본성, 서로 필요한 기운, 띠, MBTI까지 엮어서 점수로 보여 드려요.</p>
-    <button class="cta red cardcta" type="button" data-open-gh>궁합 보러 가기</button>`));
+    <button class="cta red cardcta" type="button" data-open-gh>지금 같이 보기</button>
+    <button class="ghost cardcta" type="button" data-send-invite>궁합 링크 보내기</button>
+    <p class="hint">링크를 받은 사람은 자기 생일만 넣으면 둘의 궁합을 바로 볼 수 있어요.</p>`));
 
   return cards;
 }

@@ -1,8 +1,8 @@
 // 궁합 점수 분포 점검: node tools/calibrate-gunghap.mjs
-import { computePillars, yearPillar } from '../js/saju/calendar.js?v=14';
-import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=14';
-import { gunghap } from '../js/gunghap.js?v=14';
-import { TYPES } from '../js/mbti.js?v=14';
+import { computePillars, yearPillar } from '../js/saju/calendar.js?v=15';
+import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=15';
+import { gunghap } from '../js/gunghap.js?v=15';
+import { TYPES } from '../js/mbti.js?v=15';
 let seed = 5; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
 const person = () => { const d = new Date(Date.UTC(1960, 0, 1) + rnd() * (Date.UTC(2005, 0, 1) - Date.UTC(1960, 0, 1)));
   const saju = analyzeSaju(computePillars({ calendar: 'solar', year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate(), hour: rnd() < .2 ? null : d.getUTCHours(), minute: 0, gender: 'M', place: 'seoul' }));

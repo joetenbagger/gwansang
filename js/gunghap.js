@@ -1,7 +1,7 @@
 // gunghap.js — 두 사람 궁합 (순수 함수). 재미용입니다.
 // 항목: 일간(본성) 30 · 서로 필요한 기운 25 · 일지(속마음·생활) 20 · 띠 10 · MBTI 15 (MBTI가 없으면 나머지로 나눔)
-import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES, CONTROLS, CLASH, BRANCH_COMBINE, STEM_COMBINE, isPair, triadOf } from './saju/data.js?v=14';
-import { goodMatches } from './mbti.js?v=14';
+import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES, CONTROLS, CLASH, BRANCH_COMBINE, STEM_COMBINE, isPair, triadOf } from './saju/data.js?v=15';
+import { goodMatches } from './mbti.js?v=15';
 
 export const RELATIONS = {
   lover: { label: '연인·썸', who: '연인' },

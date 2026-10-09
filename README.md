@@ -18,6 +18,8 @@
 | `js/gunghap.js` · `gh-deck.js` | 친구·연인·동료 궁합 계산과 결과 카드 |
 | `js/celebs.js` · `celeb-match.js` | 공개 생년월일 기반 유명인 목록과 같은 일주·비슷한 기운 매칭 |
 | `js/share.js` | 공유용 이미지 만들기(내 결과, 궁합) |
+| `js/invite.js` | 궁합 초대 링크(보내는 사람 정보를 주소 # 뒤에 담음, 서버로 가지 않음) |
+| `og.png` | 카톡 등 링크 미리보기 이미지 |
 | `js/copy.js` | 화면 문구, 시진 표 |
 | `js/view-saju.js` · `view-face.js` | 전체 풀이(사주·관상 상세) |
 | `js/view-total.js` | 이전 버전의 종합 화면(점검 도구에서만 사용) |

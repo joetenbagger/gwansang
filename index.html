@@ -7,12 +7,18 @@
 <title>얼굴팔자</title>
 <meta name="description" content="생년월일시와 얼굴 사진으로 보는 사주와 관상. 사진과 생일은 내 폰 밖으로 나가지 않아요.">
 <meta property="og:title" content="얼굴팔자">
-<meta property="og:description" content="얼굴에 드러난 것, 태어난 날에 적힌 것">
+<meta property="og:description" content="생일만 넣으면 사주·관상·MBTI·궁합이 바로 나와요.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://joetenbagger.github.io/gwansang/">
+<meta property="og:image" content="https://joetenbagger.github.io/gwansang/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="css/app.css?v=14">
+<link rel="stylesheet" href="css/app.css?v=15">
 </head>
 <body>
 <div class="app" id="app">
@@ -179,19 +185,38 @@
     <div class="foot"><button class="cta red" id="goAnalyze" type="button" hidden>이 얼굴로 풀이 보기</button></div>
   </section>
 
+  <!-- 초대받은 사람 -->
+  <section class="screen intro" data-screen="invite" hidden>
+    <div class="cover">
+      <div>
+        <div class="talisman invite" aria-hidden="true">
+          <span class="corner">緣</span>
+          <span class="vt" id="invGlyph">?</span>
+          <span class="stamp"><span>宮</span><span>合</span><span>四</span><span>柱</span></span>
+        </div>
+        <p class="tagline"><b id="invName"></b>님이<br><span id="invRel">궁합</span>을 보자고 했어요.</p>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="cta red" id="invStart" type="button">내 생일 넣고 궁합 보기</button>
+      <button class="link" id="invSkip" type="button">궁합 말고 내 팔자만 볼래요</button>
+      <p class="privacy">내 생일은 이 기기 밖으로 나가지 않아요. 상대에게도 보내지 않아요.</p>
+    </div>
+  </section>
+
   <!-- 궁합: 상대 1 -->
   <section class="screen" data-screen="gh1" hidden>
     <div class="topbar"><button class="back" type="button" aria-label="뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="progress"><b style="width:50%"></b></div></div>
-    <h1 class="q">누구와<br>궁합을 볼까요?</h1>
-    <p class="sub">상대의 생일도 이 기기 안에서만 계산하고 저장하지 않아요.</p>
+    <h1 class="q" id="ghTitle">누구와<br>궁합을 볼까요?</h1>
+    <p class="sub" id="ghSub">상대의 생일도 이 기기 안에서만 계산하고 저장하지 않아요.</p>
     <div class="body">
       <div class="opts" id="ghRelOpts">
         <button class="opt" type="button" data-v="lover" aria-pressed="false"><span><b>연인·썸</b><small>설렘과 생활이 맞을까</small></span><span class="mark"></span></button>
         <button class="opt" type="button" data-v="friend" aria-pressed="true"><span><b>친구</b><small>오래 갈 사이일까</small></span><span class="mark"></span></button>
         <button class="opt" type="button" data-v="work" aria-pressed="false"><span><b>동료·동업</b><small>같이 일하면 어떨까</small></span><span class="mark"></span></button>
       </div>
-      <div class="field"><label for="ghName">상대 이름</label><input class="input" id="ghName" type="text" maxlength="12" autocomplete="off" placeholder="예: 하늘"></div>
-      <div class="field"><span class="lbl">상대 성별</span>
+      <div class="field"><label for="ghName" id="ghNameLabel">상대 이름</label><input class="input" id="ghName" type="text" maxlength="12" autocomplete="off" placeholder="예: 하늘"></div>
+      <div class="field"><span class="lbl" id="ghGenderLabel">상대 성별</span>
         <div class="toggle" id="ghGender" role="group" aria-label="상대 성별">
           <button type="button" data-v="M" aria-pressed="false">남자</button>
           <button type="button" data-v="F" aria-pressed="true">여자</button>
@@ -256,6 +281,25 @@
     <button class="navbtn next" id="nextCard" type="button" aria-label="다음 카드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
   </section>
 
+  <!-- 궁합 링크 보내기 -->
+  <section class="sheet bottom" id="inviteSheet" hidden aria-label="궁합 링크 보내기">
+    <div class="inner">
+      <div class="head"><h2>궁합 링크 보내기</h2><button class="link" id="closeInvite" type="button">닫기</button></div>
+      <p class="sub">링크를 받은 사람이 자기 생일만 넣으면 둘의 궁합이 바로 나와요.</p>
+      <div class="opts" id="invRelOpts">
+        <button class="opt" type="button" data-v="lover" aria-pressed="false"><span><b>연인·썸에게</b></span><span class="mark"></span></button>
+        <button class="opt" type="button" data-v="friend" aria-pressed="true"><span><b>친구에게</b></span><span class="mark"></span></button>
+        <button class="opt" type="button" data-v="work" aria-pressed="false"><span><b>동료에게</b></span><span class="mark"></span></button>
+      </div>
+      <p class="warn">링크 안에 내 이름과 생년월일·태어난 시각이 들어가요. 링크를 받은 사람은 그 정보를 볼 수 있으니, 믿는 사람에게만 보내 주세요. 사진은 들어가지 않아요.</p>
+      <div class="row2">
+        <button class="ghost" id="copyInvite" type="button">링크 복사</button>
+        <button class="cta red" id="sendInvite" type="button">보내기</button>
+      </div>
+      <input class="input linkbox" id="inviteLink" type="text" readonly aria-label="궁합 링크" hidden>
+    </div>
+  </section>
+
   <!-- 전체 풀이 -->
   <section class="sheet" id="sheet" hidden aria-label="전체 풀이">
     <div class="inner">
@@ -270,6 +314,6 @@
   </section>
 </div>
 <div class="toast" id="toast" hidden role="status"></div>
-<script type="module" src="js/app.js?v=14"></script>
+<script type="module" src="js/app.js?v=15"></script>
 </body>
 </html>

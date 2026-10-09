@@ -1,8 +1,8 @@
 // gh-deck.js — 궁합 결과 카드
-import { STEMS, BRANCHES, EL } from './saju/data.js?v=14';
-import { NICK } from './copy.js?v=14';
-import { RELATIONS } from './gunghap.js?v=14';
-import { esc } from './util.js?v=14';
+import { STEMS, BRANCHES, EL } from './saju/data.js?v=15';
+import { NICK } from './copy.js?v=15';
+import { RELATIONS } from './gunghap.js?v=15';
+import { esc } from './util.js?v=15';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const card = (kicker, body) => `<article class="card">${kicker ? `<span class="kicker">${esc(kicker)}</span>` : ''}${body}</article>`;
@@ -21,7 +21,7 @@ function meter(score) {
     <div class="ghbar"><i style="width:${score}%"></i></div>`;
 }
 
-export function buildGhCards(A, B, g) {
+export function buildGhCards(A, B, g, { invited = false } = {}) {
   const rel = RELATIONS[g.rel];
   const cards = [];
   cards.push(card(`${rel.label} 궁합`, `
@@ -68,5 +68,12 @@ export function buildGhCards(A, B, g) {
   cards.push(card('잘 지내는 법', `<h2>이것만 <em>기억</em>하세요</h2>
     <ol class="list3">${g.tips.map(t => `<li><span>${esc(t)}</span></li>`).join('')}</ol>
     <p class="hint">궁합은 정해진 답이 아니라 서로를 이해하는 실마리예요. 재미로 봐 주세요.</p>`));
+  cards.push(card(invited ? '이번엔 나 혼자' : '한 명 더?', invited ? `
+    <h2>궁합 봤으면<br><em>내 팔자</em>도 볼까요?</h2>
+    <p>방금 넣은 생일로 사주, 관상, 사주가 말하는 MBTI, 나와 닮은 유명인까지 봐 드려요.</p>
+    <button class="cta red cardcta" type="button" data-start-own>나도 내 팔자 보기</button>` : `
+    <h2>다른 사람과도<br><em>궁합</em>을 볼까요?</h2>
+    <p>링크를 보내면 상대가 자기 생일만 넣고 바로 나와의 궁합을 볼 수 있어요.</p>
+    <button class="cta red cardcta" type="button" data-send-invite>궁합 링크 보내기</button>`));
   return cards;
 }

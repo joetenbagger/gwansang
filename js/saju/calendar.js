@@ -6,7 +6,7 @@
 //     한국 표준시는 여러 번 바뀌었고(UTC+8:30 ↔ +9) 서머타임을 실시한 해도 있어, 먼저 정확한 세계시(UTC)로 바꿉니다.
 //  2) 년주·월주는 절기(입춘, 경칩 …)로 바뀝니다. 만세력 라이브러리의 절기 시각은 베이징 시간(UTC+8) 기준이라 UTC+8로 바꿔서 넣습니다.
 //  3) 일주·시주는 해의 위치가 기준이므로 출생지 경도로 보정한 평균 태양시를 씁니다(서울은 시계보다 약 32분 늦음).
-import { Solar, Lunar } from '../../vendor/lunar.mjs?v=14';
+import { Solar, Lunar } from '../../vendor/lunar.mjs?v=15';
 
 // [UTC 기준 시작 시각(ms), 표준시 오프셋(분), 서머타임 여부] — IANA Asia/Seoul 기록에서 뽑음
 const KOREA_OFFSETS = [

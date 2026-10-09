@@ -1,7 +1,7 @@
 // view-total.js — 종합 풀이 화면
-import { EL } from './saju/data.js?v=14';
-import { esc } from './util.js?v=14';
-import { caution } from './view-face.js?v=14';
+import { EL } from './saju/data.js?v=15';
+import { esc } from './util.js?v=15';
+import { caution } from './view-face.js?v=15';
 
 const TONE = { good: ['순풍', 'good'], neutral: ['보통', 'neutral'], caution: ['주의', 'bad'] };
 

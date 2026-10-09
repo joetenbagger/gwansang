@@ -1,7 +1,7 @@
 // loading.js — 분석 중 연출. 계산은 이미 끝난 상태에서 결과를 한 단계씩 보여 줍니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=14';
-import { LOADING_STEPS } from './copy.js?v=14';
-import { predictMbti } from './mbti.js?v=14';
+import { STEMS, BRANCHES, EL, ELEMENTS, GENERATES } from './saju/data.js?v=15';
+import { LOADING_STEPS } from './copy.js?v=15';
+import { predictMbti } from './mbti.js?v=15';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 250) : ms));
