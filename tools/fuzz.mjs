@@ -1,14 +1,14 @@
 // 무작위 입력으로 풀이 문장을 만들어 빈 값(undefined·NaN 등)이나 오류가 없는지 확인: node tools/fuzz.mjs
-import { computePillars, yearPillar } from '../js/saju/calendar.js?v=15';
-import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=15';
-import { combine } from '../js/combined.js?v=15';
-import { renderSaju } from '../js/view-saju.js?v=15';
-import { renderTotal } from '../js/view-total.js?v=15';
-import { renderFace } from '../js/view-face.js?v=15';
-import { computeMetrics } from '../js/metrics.js?v=15';
-import { interpret } from '../js/rules.js?v=15';
-import { SAMPLE_FACE } from '../js/sample-face.js?v=15';
-import { buildCards } from '../js/deck.js?v=15';
+import { computePillars, yearPillar } from '../js/saju/calendar.js?v=16';
+import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=16';
+import { combine } from '../js/combined.js?v=16';
+import { renderSaju } from '../js/view-saju.js?v=16';
+import { renderTotal } from '../js/view-total.js?v=16';
+import { renderFace } from '../js/view-face.js?v=16';
+import { computeMetrics } from '../js/metrics.js?v=16';
+import { interpret } from '../js/rules.js?v=16';
+import { SAMPLE_FACE } from '../js/sample-face.js?v=16';
+import { buildCards } from '../js/deck.js?v=16';
 let seed = 7; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
 const jitterFace = () => SAMPLE_FACE.map(p => ({ x: p.x + (rnd() - .5) * 14, y: p.y + (rnd() - .5) * 14 }));
 const bad = /undefined|NaN|null|\[object/;

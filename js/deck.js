@@ -1,10 +1,12 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=15';
-import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=15';
-import { esc } from './util.js?v=15';
-import { topicCards } from './topic.js?v=15';
-import { findCelebs } from './celeb-match.js?v=15';
-import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=15';
+import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=16';
+import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=16';
+import { esc } from './util.js?v=16';
+import { topicCards } from './topic.js?v=16';
+import { ILJU } from './content/ilju.js?v=16';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=16';
+import { findCelebs } from './celeb-match.js?v=16';
+import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=16';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -120,6 +122,9 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
     <p>${esc(saju.dayMaster.text.split('. ').slice(1, 3).join('. '))}${face ? ` 얼굴은 ${esc(face.result.face.primary.shape)}의 ${face.result.face.primary.name}(${face.result.face.primary.hanja})이에요.` : ''}</p>
     <p class="hint">옆으로 넘겨 보세요 →</p>`));
 
+  // 1-1. 60일주 · 격국 · 12운성
+  for (const c of natureCards(saju)) cards.push(c);
+
   // 2. 고른 질문: 심층 카드 4장
   const t = topic.id;
   const yr = years[0];
@@ -204,6 +209,36 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
     <p class="hint">링크를 받은 사람은 자기 생일만 넣으면 둘의 궁합을 바로 볼 수 있어요.</p>`));
 
   return cards;
+}
+
+function natureCards(saju) {
+  const dc = saju.cells.day;
+  const key = dc.stem.char + dc.branch.char;
+  const il = ILJU[key];
+  const gy = gyeokOf(saju);
+  const un = unseongOf(dc.stem.char, dc.branch.char);
+  const out = [];
+  if (il) {
+    out.push(card('ilju', `60일주 중 ${STEMS[key[0]].ko}${BRANCHES[key[1]].ko}일주`, `
+      <span class="iljubig" data-el="${dc.stem.el}" style="color:var(--e)">${key}</span>
+      <h2><em>${esc(il.img)}</em></h2>
+      <p class="lead">${esc(il.core)}</p>
+      <div class="area"><b>연애</b><p>${esc(il.love)}</p></div>
+      <div class="area"><b>재물</b><p>${esc(il.money)}</p></div>
+      <div class="area"><b>일</b><p>${esc(il.work)}</p></div>
+      ${but(il.caution)}
+      <p class="hint">태어난 날의 기둥(일주)은 60가지예요. 같은 일간이어도 일주에 따라 성향이 달라져요.</p>`));
+  }
+  out.push(card('gyeok', '타고난 그릇과 기운의 상태', `
+    <h2><em>${esc(gy.name)}</em> · ${esc(gy.img)}</h2>
+    <p class="lead">${esc(gy.core)}</p>
+    <div class="kv"><div class="wide"><small>강점</small><b>${esc(gy.strong)}</b></div><div class="wide"><small>잘 맞는 자리</small><b>${esc(gy.career)}</b></div></div>
+    ${but(gy.caution)}
+    <hr>
+    <p><b>12운성 · ${un.name}(${un.hanja})</b>, ${esc(un.img)}의 기운이에요. ${esc(un.text)}</p>
+    ${but(un.caution)}
+    <p class="hint">격국은 태어난 달이 정해 주는 사회적 그릇, 12운성은 나를 나타내는 글자가 앉은 자리에서 얼마나 힘을 쓰는지를 봐요.</p>`));
+  return out;
 }
 
 function celebCard(saju) {

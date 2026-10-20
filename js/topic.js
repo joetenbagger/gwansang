@@ -1,11 +1,15 @@
 // topic.js — 첫 화면에서 고른 질문에 대한 심층 카드(4장)
-import { Solar } from '../vendor/lunar.mjs?v=15';
-import { STEMS, BRANCHES, EL, GROUPS, tenGod, TEN_GODS, groupOfElement, elementOfGroup, CLASH, BRANCH_COMBINE, isPair, triadOf, PEACH, generatedBy } from './saju/data.js?v=15';
-import { yearPillar } from './saju/calendar.js?v=15';
-import { analyzeYear } from './saju/analyze.js?v=15';
-import { ATTRACT, FITS, LOVE_STYLE, INDUSTRY, WORK_STYLE, GOD_AREA, HABITS, NATAL_SOCIAL, GOD_DO } from './topic-texts.js?v=15';
-import { CAREER } from './saju/texts.js?v=15';
-import { esc } from './util.js?v=15';
+import { Solar } from '../vendor/lunar.mjs?v=16';
+import { STEMS, BRANCHES, EL, GROUPS, tenGod, TEN_GODS, groupOfElement, elementOfGroup, CLASH, BRANCH_COMBINE, isPair, triadOf, PEACH, generatedBy } from './saju/data.js?v=16';
+import { yearPillar } from './saju/calendar.js?v=16';
+import { analyzeYear } from './saju/analyze.js?v=16';
+import { ATTRACT, FITS, LOVE_STYLE, INDUSTRY, WORK_STYLE, GOD_AREA, HABITS, NATAL_SOCIAL, GOD_DO } from './topic-texts.js?v=16';
+import { CAREER } from './saju/texts.js?v=16';
+import { esc } from './util.js?v=16';
+import { ILJU } from './content/ilju.js?v=16';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=16';
+const iljuOf = saju => ILJU[saju.cells.day.stem.char + saju.cells.day.branch.char];
+const iljuName = saju => `${saju.cells.day.stem.ko}${saju.cells.day.branch.ko}일주`;
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -74,6 +78,7 @@ function love(ctx) {
   cards.push({
     kicker: '연애·결혼 2/4', title: '연애할 때의 나',
     body: `<p class="lead">${esc(LOVE_STYLE[dm])}</p>
+      <p><b>${iljuName(saju)}</b>로 보면, ${esc(iljuOf(saju).love)}</p>
       <p>${sik.level === 'high' ? '표현하는 기운(식상)이 강해서 좋아하는 마음을 잘 드러내요. 다만 말이 앞서 상대를 피곤하게 할 때가 있어요.' : sik.level === 'none' || sik.level === 'low' ? '표현하는 기운(식상)이 약해서 마음은 큰데 잘 안 보여요. 상대는 내 마음을 생각보다 모를 수 있어요.' : '표현하는 기운(식상)이 알맞아서 밀고 당기기를 무리 없이 해요.'}</p>
       ${peach ? '<p>도화살이 있어 가만히 있어도 사람이 다가와요. 인연이 많은 만큼 고르는 눈이 중요해요.</p>' : ''}
       ${faceBits.length ? `<p>${esc(faceBits.join(' '))}</p>` : ''}
@@ -140,7 +145,7 @@ function money(ctx) {
   else if (s === 'balanced') bowl = '버는 힘과 담는 그릇이 균형 잡혀 있어요. 무리한 한 방만 피하면 시간이 갈수록 꾸준히 불어나는 구조예요.';
   else bowl = '큰돈보다 작은 돈을 오래 굴리는 쪽이 맞아요. 잃지 않는 것이 버는 것보다 중요한 사주예요.';
   const nose = face?.result.features.find(f => f.id === 'noseWidth');
-  cards.push({ kicker: '돈·재물 2/4', title: '내 돈 그릇', body: `<p class="lead">${esc(bowl)}</p>${nose ? `<p>관상에서 재물 창고로 보는 콧볼은 '${esc(nose.band.tag)}'이에요. ${esc(nose.band.text)}</p>` : '<p class="hint">사진을 넣으면 관상의 재물 창고(콧볼)도 함께 봐요.</p>'}` });
+  cards.push({ kicker: '돈·재물 2/4', title: '내 돈 그릇', body: `<p class="lead">${esc(bowl)}</p>${nose ? `<p>관상에서 재물 창고로 보는 콧볼은 '${esc(nose.band.tag)}'이에요. ${esc(nose.band.text)}</p>` : '<p class="hint">사진을 넣으면 관상의 재물 창고(콧볼)도 함께 봐요.</p>'}<p><b>${iljuName(saju)}</b>의 재물 · ${esc(iljuOf(saju).money)}</p><p class="hint">${esc(gyeokOf(saju).name)} · 강점은 ${esc(gyeokOf(saju).strong)}</p>` });
 
   const leaks = [];
   if (g('bigeop').level === 'high') leaks.push('사람에게 새는 돈. 빌려주기, 보증, 동업, 경조사처럼 정 때문에 나가는 돈이 커요.');
@@ -175,12 +180,13 @@ function work(ctx) {
   const d = saju.dominant;
   const monthGod = saju.cells.month.branch.god;
   const cards = [];
-  cards.push({ kicker: '일·진로 1/4', title: '일할 때의 나', body: `<p class="lead">${esc(WORK_STYLE[dm])}</p><p>사회 생활을 보는 자리(월지)에는 ${esc(j(monthGod, '이', '가'))} 있어요. ${esc(NATAL_SOCIAL[monthGod].work)}</p>${face ? `<p>얼굴은 ${esc(face.result.face.primary.name)}으로, ${esc(face.result.face.primary.text.split('. ')[1] || '')}</p>` : ''}` });
+  cards.push({ kicker: '일·진로 1/4', title: '일할 때의 나', body: `<p class="lead">${esc(WORK_STYLE[dm])}</p><p><b>${iljuName(saju)}</b> · ${esc(iljuOf(saju).work)}</p><p>사회 생활을 보는 자리(월지)에는 ${esc(j(monthGod, '이', '가'))} 있어요. ${esc(NATAL_SOCIAL[monthGod].work)}</p>${face ? `<p>얼굴은 ${esc(face.result.face.primary.name)}으로, ${esc(face.result.face.primary.text.split('. ')[1] || '')}</p>` : ''}` });
 
   cards.push({ kicker: '일·진로 2/4', title: '잘 맞는 분야', body: `
     <p class="lead">${esc(CAREER[d.id])} 쪽이 잘 맞아요.</p>
     <p>사주에서 가장 센 기운이 ${GROUPS[d.id].name}(${GROUPS[d.id].about.split('·').slice(0, 2).join('·')})이라서예요.</p>
-    <hr><p><b>오래 버티기 좋은 업종</b> · ${esc(INDUSTRY[saju.yongsin.el])}</p>
+    <hr><p><b>${esc(gyeokOf(saju).name)}의 자리</b> · ${esc(gyeokOf(saju).career)}</p>
+    <p><b>오래 버티기 좋은 업종</b> · ${esc(INDUSTRY[saju.yongsin.el])}</p>
     <p class="hint">나에게 필요한 기운 ${elKo(saju.yongsin.el)}에 속한 업종이에요. 일이 힘들어도 기운을 채워 줘서 오래 갈 수 있어요.</p>` });
 
   const types = [
@@ -276,6 +282,7 @@ function self(ctx) {
   const cards = [];
   cards.push({ kicker: '나라는 사람 1/4', title: '겉과 <em>속</em>', body: `
     <p><b>속</b> · ${esc(dm.text)}</p>
+    <p><b>${iljuName(saju)} · ${esc(iljuOf(saju).img)}</b> · ${esc(iljuOf(saju).core)}</p>
     <p><b>밖에서 보이는 나</b> · 사회 생활을 보는 월주에 ${esc(j(monthStemGod, '이', '가'))} 드러나 있어요. ${esc(NATAL_SOCIAL[monthStemGod].people)}</p>
     ${face ? `<p><b>얼굴이 주는 인상</b> · ${esc(face.result.face.primary.text)}</p>` : ''}
     <p class="hint">${saju.strength.key === 'strong' ? '속이 단단해서 겉보다 실제로 더 고집이 세요.' : saju.strength.key === 'weak' ? '겉으로는 괜찮아 보여도 속은 주변 영향을 많이 받아요.' : '겉과 속의 차이가 크지 않은 편이에요.'}</p>` });
@@ -286,9 +293,11 @@ function self(ctx) {
   if (goodSal) strengths.push(`${goodSal.name}: ${goodSal.text}`);
   if (face) strengths.push(`관상: ${face.result.standouts[0].band.text}`);
   strengths.push(saju.strength.text);
+  const un = unseongOf(saju.cells.day.stem.char, saju.cells.day.branch.char);
+  strengths.splice(1, 0, `${gyeokOf(saju).name}: ${gyeokOf(saju).strong}. ${un.name}(${un.hanja})의 기운이라 ${un.text}`);
   cards.push({ kicker: '나라는 사람 2/4', title: '타고난 <em>무기</em>', body: `<ol class="list3">${strengths.slice(0, 3).map(t => `<li><span>${esc(t)}</span></li>`).join('')}</ol>` });
 
-  const weak = [dm.caution, saju.strength.caution];
+  const weak = [dm.caution, iljuOf(saju).caution, unseongOf(saju.cells.day.stem.char, saju.cells.day.branch.char).caution, saju.strength.caution];
   if (saju.excess[0]) weak.push(saju.excess[0].text);
   if (face) weak.push(face.result.standouts[0].band.caution);
   cards.push({ kicker: '나라는 사람 3/4', title: '알아 두면 좋은 <em>약점</em>', body: `<ol class="list3">${weak.slice(0, 3).map(t => `<li><span>${esc(t)}</span></li>`).join('')}</ol>` });

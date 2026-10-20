@@ -1,8 +1,8 @@
 // gh-deck.js — 궁합 결과 카드
-import { STEMS, BRANCHES, EL } from './saju/data.js?v=15';
-import { NICK } from './copy.js?v=15';
-import { RELATIONS } from './gunghap.js?v=15';
-import { esc } from './util.js?v=15';
+import { STEMS, BRANCHES, EL } from './saju/data.js?v=16';
+import { NICK } from './copy.js?v=16';
+import { RELATIONS } from './gunghap.js?v=16';
+import { esc } from './util.js?v=16';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const card = (kicker, body) => `<article class="card">${kicker ? `<span class="kicker">${esc(kicker)}</span>` : ''}${body}</article>`;

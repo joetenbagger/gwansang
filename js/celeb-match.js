@@ -1,8 +1,8 @@
 // celeb-match.js — 나와 일주가 같거나 기운이 비슷한 유명인 찾기
-import { CELEBS } from './celebs.js?v=15';
-import { computePillars } from './saju/calendar.js?v=15';
-import { analyzeSaju } from './saju/analyze.js?v=15';
-import { ELEMENTS } from './saju/data.js?v=15';
+import { CELEBS } from './celebs.js?v=16';
+import { computePillars } from './saju/calendar.js?v=16';
+import { analyzeSaju } from './saju/analyze.js?v=16';
+import { ELEMENTS } from './saju/data.js?v=16';
 
 let cache = null;
 function celebSajus() {

@@ -1,8 +1,10 @@
 // view-saju.js — 사주 풀이 화면
-import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=15';
-import { STRENGTH_CUTS } from './saju/analyze.js?v=15';
-import { esc, pct } from './util.js?v=15';
-import { caution } from './view-face.js?v=15';
+import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=16';
+import { STRENGTH_CUTS } from './saju/analyze.js?v=16';
+import { esc, pct } from './util.js?v=16';
+import { caution } from './view-face.js?v=16';
+import { ILJU } from './content/ilju.js?v=16';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=16';
 
 const COLS = [['hour', '시주', '時'], ['day', '일주', '日'], ['month', '월주', '月'], ['year', '년주', '年']];
 const TONE = { good: ['순풍', 'good'], neutral: ['보통', 'neutral'], caution: ['주의', 'bad'] };
@@ -95,6 +97,27 @@ export function renderSaju(saju, chart, years) {
         <p>${esc(dm.text)}</p>${caution(dm.caution)}</div>
     </div>
   </section>
+
+  ${(() => { const dc = saju.cells.day; const k = dc.stem.char + dc.branch.char; const il = ILJU[k]; const gy = gyeokOf(saju); const un = unseongOf(dc.stem.char, dc.branch.char);
+    return `<section class="block">
+    <h3>${STEMS[k[0]].ko}${BRANCHES[k[1]].ko}일주 <small>${k}日柱</small></h3>
+    <p><b>${esc(il.img)}</b>. ${esc(il.core)}</p>
+    <p><b>연애</b> · ${esc(il.love)}</p><p><b>재물</b> · ${esc(il.money)}</p><p><b>일</b> · ${esc(il.work)}</p>
+    ${caution(il.caution)}
+  </section>
+  <section class="block">
+    <h3>격국 <small>${gy.hanja}</small></h3>
+    <p><b>${esc(gy.name)} · ${esc(gy.img)}</b>. ${esc(gy.core)}</p>
+    <p><b>강점</b> · ${esc(gy.strong)}</p><p><b>잘 맞는 자리</b> · ${esc(gy.career)}</p>
+    ${caution(gy.caution)}
+    <p class="fine">태어난 달(월지)의 본기 십신으로 정한 간이 격국이에요.</p>
+  </section>
+  <section class="block">
+    <h3>12운성 <small>十二運星</small></h3>
+    <p><b>${un.name}(${un.hanja}) · ${esc(un.img)}</b>. ${esc(un.text)}</p>
+    ${caution(un.caution)}
+    <p class="fine">일간이 일지(태어난 날의 지지)에서 어떤 상태인지 보는 기준이에요.</p>
+  </section>`; })()}
 
   <section class="block">
     <h3>오행 분포 <small>五行</small></h3>

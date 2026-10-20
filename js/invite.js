@@ -1,8 +1,8 @@
 // invite.js — 궁합 초대 링크: 보내는 사람의 정보를 주소 뒤(#)에 담습니다.
 // 서버로 가지 않고(# 뒤는 서버에 전달되지 않음) 받은 사람의 브라우저에서만 읽습니다.
 // 암호화는 아니므로, 링크를 받은 사람은 보낸 사람의 생년월일을 알 수 있습니다(화면에서 안내).
-import { TYPES } from './mbti.js?v=15';
-import { PLACES } from './saju/calendar.js?v=15';
+import { TYPES } from './mbti.js?v=16';
+import { PLACES } from './saju/calendar.js?v=16';
 
 const PREFIX = 'g1.';
 
