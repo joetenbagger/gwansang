@@ -1,12 +1,14 @@
 // view-saju.js — 사주 풀이 화면
-import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=17';
-import { STRENGTH_CUTS } from './saju/analyze.js?v=17';
-import { esc, pct } from './util.js?v=17';
-import { caution } from './view-face.js?v=17';
-import { ILJU } from './content/ilju.js?v=17';
-import { gyeokOf, unseongOf } from './content/gyeok.js?v=17';
-import { buildReading } from './saju/reading.js?v=17';
-import { readingBody } from './view-reading.js?v=17';
+import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=18';
+import { STRENGTH_CUTS } from './saju/analyze.js?v=18';
+import { esc, pct } from './util.js?v=18';
+import { caution } from './view-face.js?v=18';
+import { ILJU } from './content/ilju.js?v=18';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=18';
+import { buildReading } from './saju/reading.js?v=18';
+import { readingBody } from './view-reading.js?v=18';
+import { buildLifeFlow } from './saju/life-flow.js?v=18';
+import { lifeFlowBody } from './view-flow.js?v=18';
 
 const COLS = [['hour', '시주', '時'], ['day', '일주', '日'], ['month', '월주', '月'], ['year', '년주', '年']];
 const TONE = { good: ['순풍', 'good'], neutral: ['보통', 'neutral'], caution: ['주의', 'bad'] };
@@ -63,20 +65,22 @@ function strengthMeter(saju) {
 }
 
 function daYunStrip(saju, chart) {
-  const items = saju.daYun.map(d => `<li class="dy${d.current ? ' now' : ''}" data-tone="${d.tone}">
-      <span class="age">${d.startAge}세</span>
-      <span class="gz"><b data-el="${STEMS[d.stem].el}">${d.stem}</b><b data-el="${BRANCHES[d.branch].el}">${d.branch}</b></span>
-      <span class="kr">${STEMS[d.stem].ko}${BRANCHES[d.branch].ko}</span>
-      <span class="god">${d.god}</span>
-      <span class="pill ${TONE[d.tone][1]}">${TONE[d.tone][0]}</span>
-      ${d.current ? '<span class="nowtag">지금</span>' : ''}
-    </li>`).join('');
-  const cur = saju.daYun.find(d => d.current);
-  return `<div class="strip"><ol>${items}</ol></div>
-    <p class="fine">대운은 ${chart.daYunStart.years}년 ${chart.daYunStart.months}개월 무렵 시작해 10년마다 바뀌며, ${chart.daYunStart.forward ? '순행' : '역행'}합니다.</p>
-    ${cur ? `<div class="callout"><h4>지금 대운: ${cur.startYear}~${cur.endYear}년 ${STEMS[cur.stem].ko}${BRANCHES[cur.branch].ko}(${cur.stem}${cur.branch}) · ${cur.god}</h4>
-      <p>${esc(cur.theme)} ${cur.tone === 'good' ? '사주에 필요한 기운이 들어와 힘을 받는 10년입니다.' : cur.tone === 'caution' ? '사주가 꺼리는 기운이 들어와 버티는 힘이 필요한 10년입니다.' : '좋고 나쁨이 섞여 있어 선택이 결과를 가르는 10년입니다.'}</p>
-      ${cur.clashDay ? caution('대운의 지지가 일지(배우자 자리)와 충돌합니다. 가정·거처·관계에 변화가 생기기 쉬운 시기입니다.') : ''}</div>` : ''}`;
+  const flow = buildLifeFlow(saju, chart);
+  const items = flow.periods.map(d => {
+    const current = d === flow.current;
+    return '<li class="dy' + (current ? ' now' : '') + '" data-tone="' + d.tone + '">' +
+      '<span class="age">' + d.startYear + '년</span>' +
+      '<span class="gz"><b data-el="' + STEMS[d.stem].el + '">' + d.stem + '</b><b data-el="' + BRANCHES[d.branch].el + '">' + d.branch + '</b></span>' +
+      '<span class="kr">' + STEMS[d.stem].ko + BRANCHES[d.branch].ko + '</span>' +
+      '<span class="god">' + d.god + '</span><span class="pill ' + TONE[d.tone][1] + '">' + TONE[d.tone][0] + '</span>' +
+      (current ? '<span class="nowtag">지금</span>' : '') + '</li>';
+  }).join('');
+  return '<div class="life-focus">' + lifeFlowBody(flow, { history: false }) + '</div>' +
+    '<details class="life-history"><summary>전체 대운표 보기</summary>' +
+    '<div class="strip"><ol>' + items + '</ol></div>' +
+    '<p class="fine">표의 숫자는 나이가 아니라 각 대운이 시작되는 연도예요. 대운은 ' +
+    chart.daYunStart.years + '년 ' + chart.daYunStart.months + '개월 무렵 시작해 10년마다 바뀌며, ' +
+    (chart.daYunStart.forward ? '순행' : '역행') + '해요.</p></details>';
 }
 
 export function renderSaju(saju, chart, years) {

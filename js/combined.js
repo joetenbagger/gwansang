@@ -1,7 +1,7 @@
 // 사주와 관상을 엮는 종합 풀이. 위치별 상세 읽기는 reading.js에서 만듭니다.
-import { EL } from './saju/data.js?v=17';
-import { buildReading, questionReading, yearReading } from './saju/reading.js?v=17';
-import { ILJU } from './content/ilju.js?v=17';
+import { EL } from './saju/data.js?v=18';
+import { buildReading, questionReading, yearReading } from './saju/reading.js?v=18';
+import { ILJU } from './content/ilju.js?v=18';
 
 function faceSajuMatch(faceResult, saju) {
   const face = faceResult.face;

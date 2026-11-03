@@ -1,4 +1,4 @@
-import { esc } from './util.js?v=17';
+import { esc } from './util.js?v=18';
 
 // 카드와 전체 풀이가 같은 개인별 해석을 표시합니다. 모든 데이터 문자열은 escape합니다.
 export function readingBody(r) {

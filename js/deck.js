@@ -1,14 +1,16 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS } from './saju/data.js?v=17';
-import { NICK, STRENGTH_FRIENDLY, TOPICS } from './copy.js?v=17';
-import { esc } from './util.js?v=17';
-import { topicCards } from './topic.js?v=17';
-import { ILJU } from './content/ilju.js?v=17';
-import { gyeokOf, unseongOf } from './content/gyeok.js?v=17';
-import { findCelebs } from './celeb-match.js?v=17';
-import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=17';
-import { buildReading, mbtiReading } from './saju/reading.js?v=17';
-import { readingBody } from './view-reading.js?v=17';
+import { STEMS, BRANCHES, EL, ELEMENTS } from './saju/data.js?v=18';
+import { NICK, STRENGTH_FRIENDLY, TOPICS } from './copy.js?v=18';
+import { esc } from './util.js?v=18';
+import { topicCards } from './topic.js?v=18';
+import { ILJU } from './content/ilju.js?v=18';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=18';
+import { findCelebs } from './celeb-match.js?v=18';
+import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=18';
+import { buildReading, mbtiReading } from './saju/reading.js?v=18';
+import { readingBody } from './view-reading.js?v=18';
+import { buildLifeFlow } from './saju/life-flow.js?v=18';
+import { lifeFlowBody } from './view-flow.js?v=18';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -38,25 +40,6 @@ function ring(saju) {
   </svg>`;
 }
 
-function flowChart(saju) {
-  const list = saju.daYun.slice(0, 9);
-  if (!list.length) return '';
-  const W = 320, H = 150, pad = { l: 8, r: 8, t: 20, b: 34 };
-  const x = i => pad.l + (i + 0.5) * ((W - pad.l - pad.r) / list.length);
-  const sc = list.map(d => Math.max(-4, Math.min(4, d.score)));
-  const y = v => pad.t + (1 - (v + 4) / 8) * (H - pad.t - pad.b);
-  const path = sc.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
-  const area = `${path} L${x(sc.length - 1).toFixed(1)},${y(-4)} L${x(0).toFixed(1)},${y(-4)} Z`;
-  return `<svg class="flow" viewBox="0 0 ${W} ${H}" role="img" aria-label="대운 흐름">
-    <line x1="${pad.l}" x2="${W - pad.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--rule)" stroke-dasharray="3 3"/>
-    <path d="${area}" fill="var(--seal)" fill-opacity=".08"/>
-    <path d="${path}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
-    ${list.map((d, i) => `<circle cx="${x(i)}" cy="${y(sc[i])}" r="${d.current ? 6 : 3.5}" fill="${d.current ? 'var(--seal)' : 'var(--paper-2)'}" stroke="${d.current ? 'var(--seal)' : 'var(--ink)'}" stroke-width="1.5"/>
-      <text x="${x(i)}" y="${H - 18}" text-anchor="middle" font-size="11" fill="${d.current ? 'var(--seal)' : 'var(--ink-2)'}" font-weight="${d.current ? 700 : 400}">${d.startAge}</text>
-      <text x="${x(i)}" y="${H - 4}" text-anchor="middle" font-size="12" font-family="Song Myung, serif" fill="var(--ink-2)">${d.stem}${d.branch}</text>
-      ${d.current ? `<text x="${x(i)}" y="${y(sc[i]) - 11}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--seal)">지금</text>` : ''}`).join('')}
-  </svg>`;
-}
 
 function card(id, kicker, body) {
   return { id, html: `<article class="card" data-card="${id}" aria-roledescription="카드">${kicker ? `<span class="kicker">${esc(kicker)}</span>` : ''}${body}</article>` };
@@ -187,16 +170,8 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
       ${years.map(v => `<div class="yearrow"><div class="yh"><b>${v.year} ${v.stemKo}${v.branchKo}년</b>${toneTag(v.tone)}</div><p>${esc(v.text)}</p>${but(v.caution)}${v.action ? `<p class="reading-action">${esc(v.action)}</p>` : ''}${v.evidence ? `<p class="reading-basis">읽은 자리 · ${esc(v.evidence)}</p>` : ''}</div>`).join('')}`));
   }
 
-  // 11. 대운 흐름
-  const future = saju.daYun.filter(d => d.startYear >= new Date().getFullYear() - 9);
-  const best = [...future].sort((a, b) => b.score - a.score)[0];
-  const worst = [...future].sort((a, b) => a.score - b.score)[0];
-  cards.push(card('flow', '인생의 큰 흐름', `
-    <h2>${best ? `<em>${best.startAge}세</em>부터 10년이 가장 순해요` : '10년마다 바뀌는 큰 운'}</h2>
-    ${flowChart(saju)}
-    ${best ? `<p>${best.startYear}년부터 ${best.stem}${best.branch}(${STEMS[best.stem].ko}${BRANCHES[best.branch].ko}) 대운. ${esc(best.theme)}</p>` : ''}
-    ${worst && worst !== best && worst.score < 0 ? but(`${worst.startAge}세 무렵 ${worst.stem}${worst.branch} 대운은 사주가 꺼리는 기운이 들어와요. ${worst.theme}`) : ''}
-    <p class="hint">선이 위로 갈수록 사주에 필요한 기운이 들어오는 시기예요.</p>`));
+  // 11. 지금의 대운과 앞으로 5년을 먼저 읽고, 전체 흐름은 펼쳐서 봅니다.
+  cards.push(card('flow', '인생의 큰 흐름', lifeFlowBody(buildLifeFlow(saju, chart))));
 
   // 12. 조심할 것
   cards.push(card('cautions', '꼭 기억할 것', `<h2>이건 <em>조심</em>하세요</h2>

@@ -1,6 +1,6 @@
 // 무작위 생년월일시로 사주 해석 분포를 점검하는 도구: node tools/calibrate-saju.mjs
-import { computePillars } from '../js/saju/calendar.js?v=17';
-import { analyzeSaju } from '../js/saju/analyze.js?v=17';
+import { computePillars } from '../js/saju/calendar.js?v=18';
+import { analyzeSaju } from '../js/saju/analyze.js?v=18';
 let seed = 42; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
 const N = +(process.argv[2] || 20000);
 const ratios = [], tally = {};

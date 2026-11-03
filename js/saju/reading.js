@@ -1,8 +1,8 @@
 // 사주 구성 → 개인별 풀이. 생일 해시·난수·요일로 문구를 바꾸지 않습니다.
 // 계산과 문구를 분리하고 선택 근거를 함께 반환합니다. DOM 접근 없음.
-import { GROUP_ORDER, EL, TEN_GODS, STEMS, CLASH, BRANCH_COMBINE, STEM_COMBINE, isPair } from './data.js?v=17';
-import { ILJU } from '../content/ilju.js?v=17';
-import { GOD_SCENES, MONTH_SCENES, SEASON_RESPONSE, HOUR_SCENES, PAIR_SCENES, CAPACITY } from '../content/reading-texts.js?v=17';
+import { GROUP_ORDER, EL, TEN_GODS, STEMS, CLASH, BRANCH_COMBINE, STEM_COMBINE, isPair } from './data.js?v=18';
+import { ILJU } from '../content/ilju.js?v=18';
+import { GOD_SCENES, MONTH_SCENES, SEASON_RESPONSE, HOUR_SCENES, PAIR_SCENES, CAPACITY } from '../content/reading-texts.js?v=18';
 
 const POSITION = { year: '태어난 해', month: '사회생활 자리', day: '가까운 관계 자리', hour: '장기 계획 자리' };
 const AREAS = { year: '오래 익숙했던 관계와 생활 기반', month: '일하는 방식과 사회적 역할', day: '가까운 관계와 생활의 약속', hour: '장기 목표와 앞으로의 계획' };

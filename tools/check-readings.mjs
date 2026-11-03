@@ -1,12 +1,12 @@
 // 동작 검증: 같은 일주·다른 월주/시주, 시간 모름, 재현성, 전 주제, 경계 입력.
 // node tools/check-readings.mjs [--examples] — 고정 문구 스냅샷 대신 실제 입력 변화로 검사합니다.
 import assert from 'node:assert/strict';
-import { computePillars, yearPillar } from '../js/saju/calendar.js?v=17';
-import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=17';
-import { buildReading, yearReading, mbtiReading } from '../js/saju/reading.js?v=17';
-import { combine } from '../js/combined.js?v=17';
-import { buildCards } from '../js/deck.js?v=17';
-import { readingBody } from '../js/view-reading.js?v=17';
+import { computePillars, yearPillar } from '../js/saju/calendar.js?v=18';
+import { analyzeSaju, analyzeYear } from '../js/saju/analyze.js?v=18';
+import { buildReading, yearReading, mbtiReading } from '../js/saju/reading.js?v=18';
+import { combine } from '../js/combined.js?v=18';
+import { buildCards } from '../js/deck.js?v=18';
+import { readingBody } from '../js/view-reading.js?v=18';
 
 const TODAY = new Date('2026-11-03T12:00:00+09:00');
 const base = { calendar: 'solar', year: 1990, month: 5, day: 15, hour: 10, minute: 45, gender: 'M', place: 'seoul', mbti: 'ENFP' };

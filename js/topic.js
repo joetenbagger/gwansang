@@ -1,11 +1,11 @@
 // 질문별 상세 풀이 4장. 개인별 장면은 reading.js, 시기 비교는 아래 계산으로 나눕니다.
-import { Solar } from '../vendor/lunar.mjs?v=17';
-import { STEMS, BRANCHES, tenGod, elementOfGroup, CLASH, BRANCH_COMBINE, isPair, triadOf, PEACH } from './saju/data.js?v=17';
-import { yearPillar } from './saju/calendar.js?v=17';
-import { analyzeYear } from './saju/analyze.js?v=17';
-import { buildReading, questionReading, yearReading } from './saju/reading.js?v=17';
-import { readingBody } from './view-reading.js?v=17';
-import { esc } from './util.js?v=17';
+import { Solar } from '../vendor/lunar.mjs?v=18';
+import { STEMS, BRANCHES, tenGod, elementOfGroup, CLASH, BRANCH_COMBINE, isPair, triadOf, PEACH } from './saju/data.js?v=18';
+import { yearPillar } from './saju/calendar.js?v=18';
+import { analyzeYear } from './saju/analyze.js?v=18';
+import { buildReading, questionReading, yearReading } from './saju/reading.js?v=18';
+import { readingBody } from './view-reading.js?v=18';
+import { esc } from './util.js?v=18';
 const but = t => t ? '<p class="but"><span>다만</span>' + esc(t) + '</p>' : '';
 const gzKo = (s, b) => STEMS[s].ko + BRANCHES[b].ko;
 
