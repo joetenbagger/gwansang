@@ -1,5 +1,5 @@
 // gyeok.js — 격국(태어난 달이 정해 주는 사회적 그릇)과 12운성(일지에서 일간의 기운 상태)
-import { STEMS, tenGod, BRANCHES } from '../saju/data.js?v=16';
+import { STEMS, tenGod, BRANCHES } from '../saju/data.js?v=17';
 
 // 월지 본기의 십신으로 격을 정하는 간이 방식
 export const GYEOK = {

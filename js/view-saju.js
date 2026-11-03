@@ -1,10 +1,12 @@
 // view-saju.js — 사주 풀이 화면
-import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=16';
-import { STRENGTH_CUTS } from './saju/analyze.js?v=16';
-import { esc, pct } from './util.js?v=16';
-import { caution } from './view-face.js?v=16';
-import { ILJU } from './content/ilju.js?v=16';
-import { gyeokOf, unseongOf } from './content/gyeok.js?v=16';
+import { EL, ELEMENTS, STEMS, BRANCHES, PILLAR_MEANING, GROUPS } from './saju/data.js?v=17';
+import { STRENGTH_CUTS } from './saju/analyze.js?v=17';
+import { esc, pct } from './util.js?v=17';
+import { caution } from './view-face.js?v=17';
+import { ILJU } from './content/ilju.js?v=17';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=17';
+import { buildReading } from './saju/reading.js?v=17';
+import { readingBody } from './view-reading.js?v=17';
 
 const COLS = [['hour', '시주', '時'], ['day', '일주', '日'], ['month', '월주', '月'], ['year', '년주', '年']];
 const TONE = { good: ['순풍', 'good'], neutral: ['보통', 'neutral'], caution: ['주의', 'bad'] };
@@ -81,6 +83,7 @@ export function renderSaju(saju, chart, years) {
   const dm = saju.dayMaster;
   const y = saju.yongsin;
   const corr = chart.correction;
+  const reading = buildReading(saju);
   return `
   <section class="block">
     <h3>사주 원국 <small>四柱 原局</small></h3>
@@ -88,6 +91,8 @@ export function renderSaju(saju, chart, years) {
     <p class="fine">양력 ${chart.solarDate.year}.${chart.solarDate.month}.${chart.solarDate.day} · 음력 ${chart.lunar.year}.${chart.lunar.month}.${chart.lunar.day}${chart.lunar.leap ? '(윤달)' : ''}
       ${chart.timeKnown ? ` · ${esc(corr.place)} 기준 태양시 ${corr.solarTime.slice(11)} (시계보다 ${Math.abs(corr.diffMin)}분 ${corr.diffMin < 0 ? '늦게' : '빠르게'} 계산)${corr.dst ? ' · 서머타임 1시간 반영' : ''}` : ''}</p>
   </section>
+
+  ${[reading.pattern, reading.outside, reading.inside, reading.future, ...reading.links.slice(0, 2)].map(r => `<section class="block"><h3>${esc(r.title)}</h3>${readingBody(r)}</section>`).join('')}
 
   <section class="block">
     <h3>나를 나타내는 글자 <small>日干</small></h3>
@@ -176,6 +181,6 @@ export function renderSaju(saju, chart, years) {
     <h3>세운 <small>歲運</small></h3>
     <div class="years">${years.map(yr => `<div class="yearcard" data-tone="${yr.tone}">
       <div class="yhead"><b>${yr.year}년 ${yr.stemKo}${yr.branchKo}년</b><span class="pill ${TONE[yr.tone][1]}">${TONE[yr.tone][0]}</span></div>
-      <p>${esc(yr.text)}</p>${caution(yr.caution)}</div>`).join('')}</div>
+      <p>${esc(yr.text)}</p>${caution(yr.caution)}${yr.decade ? `<p>${esc(yr.decade)}</p>` : ''}${yr.action ? `<p>${esc(yr.action)}</p>` : ''}${yr.evidence ? `<p class="reading-basis">읽은 자리 · ${esc(yr.evidence)}</p>` : ''}</div>`).join('')}</div>
   </section>`;
 }

@@ -1,7 +1,8 @@
 // share.js — 공유용 한 장 이미지 (1080×1440)
-import { STEMS, EL, ELEMENTS } from './saju/data.js?v=16';
-import { NICK, TRAIT, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=16';
-import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=16';
+import { STEMS, EL, ELEMENTS } from './saju/data.js?v=17';
+import { NICK, APP_NAME, STRENGTH_FRIENDLY } from './copy.js?v=17';
+import { predictMbti, MBTI_ADJ, DAY_NOUN } from './mbti.js?v=17';
+import { buildReading } from './saju/reading.js?v=17';
 
 const C = {
   paper: '#EED89A', card: '#F7EBC4', ink: '#241A10', ink2: '#5A4A36', rule: '#C9AE68', seal: '#B92D1A',
@@ -21,7 +22,7 @@ function wrap(ctx, text, maxW) {
   return lines;
 }
 
-export async function makeShareImage({ input, saju, face, years }) {
+export async function makeShareImage({ input, saju, face, years, total }) {
   try { await Promise.all([document.fonts.load(`400 80px ${SERIF}`), document.fonts.load(`700 40px ${SANS}`)]); } catch {}
   const W = 1080, H = 1440;
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
@@ -56,7 +57,13 @@ export async function makeShareImage({ input, saju, face, years }) {
 
   // 한 줄
   g.fillStyle = C.ink; g.font = `400 64px ${SERIF}`;
-  wrap(g, TRAIT[dm], W - 260).forEach((l, i) => g.fillText(l, 130, 640 + i * 82));
+  const headline = (total?.reading || buildReading(saju)).headline;
+  let titleSize = 64, titleLines = wrap(g, headline, W - 260);
+  while (titleLines.length > 2 && titleSize > 44) {
+    titleSize -= 4; g.font = `400 ${titleSize}px ${SERIF}`;
+    titleLines = wrap(g, headline, W - 260);
+  }
+  titleLines.forEach((l, i) => g.fillText(l, 130, 640 + i * 82));
 
   // 여덟 글자
   const top = 790, colW = (W - 260) / 4;

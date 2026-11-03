@@ -1,12 +1,14 @@
 // deck.js — 결과 카드 묶음. 고른 질문을 맨 앞(표지 다음)에 둡니다.
-import { STEMS, BRANCHES, EL, ELEMENTS, GROUPS } from './saju/data.js?v=16';
-import { NICK, TRAIT, STRENGTH_FRIENDLY, TOPICS, TOPIC_TITLE } from './copy.js?v=16';
-import { esc } from './util.js?v=16';
-import { topicCards } from './topic.js?v=16';
-import { ILJU } from './content/ilju.js?v=16';
-import { gyeokOf, unseongOf } from './content/gyeok.js?v=16';
-import { findCelebs } from './celeb-match.js?v=16';
-import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=16';
+import { STEMS, BRANCHES, EL, ELEMENTS } from './saju/data.js?v=17';
+import { NICK, STRENGTH_FRIENDLY, TOPICS } from './copy.js?v=17';
+import { esc } from './util.js?v=17';
+import { topicCards } from './topic.js?v=17';
+import { ILJU } from './content/ilju.js?v=17';
+import { gyeokOf, unseongOf } from './content/gyeok.js?v=17';
+import { findCelebs } from './celeb-match.js?v=17';
+import { predictMbti, compareMbti, goodMatches, MBTI_ADJ, MBTI_LINE, DAY_NOUN, LETTER_KO } from './mbti.js?v=17';
+import { buildReading, mbtiReading } from './saju/reading.js?v=17';
+import { readingBody } from './view-reading.js?v=17';
 
 const but = t => t ? `<p class="but"><span>다만</span>${esc(t)}</p>` : '';
 const TONE = { good: '순풍', neutral: '보통', caution: '조심' };
@@ -62,7 +64,7 @@ function card(id, kicker, body) {
 
 function sectionCard(total, id, kicker, title) {
   const s = total.sections.find(x => x.id === id);
-  return card(id, kicker, `<h2>${title}</h2><p class="lead">${esc(firstSentence(s.text))}</p><p>${esc(s.text.slice(firstSentence(s.text).length).trim())}</p>${but(s.caution)}`);
+  return card(id, kicker, `<h2>${title}</h2><p class="lead">${esc(firstSentence(s.text))}</p><p>${esc(s.text.slice(firstSentence(s.text).length).trim())}</p>${but(s.caution)}${s.evidence ? `<p class="reading-basis">읽은 자리 · ${esc(s.evidence)}</p>` : ''}`);
 }
 
 function axisBars(cmp) {
@@ -79,6 +81,7 @@ function mbtiCards({ input, saju }) {
   const actual = input.mbti;
   const cmp = compareMbti(pred, actual);
   const dm = saju.dayStem;
+  const reading = buildReading(saju);
   const out = [];
   out.push(card('mbti', '사주 × MBTI', `
     <h2>사주로 보면 <em>${pred.type}</em></h2>
@@ -95,13 +98,16 @@ function mbtiCards({ input, saju }) {
       ${sames.map(r => `<div class="yearrow"><div class="yh"><b>${r.letter} = ${r.actual}</b><span class="tone good">같음</span></div><p>${esc(r.text)}</p></div>`).join('')}`));
   }
   const t = actual || pred.type;
+  const blend = mbtiReading(saju, t);
   const [m1, m2] = goodMatches(t);
   out.push(card('mbti', `${t} × ${dm}`, `
     <h2><em>${MBTI_ADJ[t]}</em> ${DAY_NOUN[dm]}</h2>
     <p class="lead">${esc(MBTI_LINE[t])}</p>
-    <p>사주로는 ${esc(TRAIT[dm])}이에요. ${actual && cmp.same >= 3 ? '두 결과가 같은 쪽을 가리켜서 성격이 한결같고 겉과 속이 비슷해요.' : '두 결과가 조금 달라서, 상황에 따라 전혀 다른 모습이 나와요. 처음 본 사람과 오래 본 사람이 나를 다르게 기억해요.'}</p>
+    <p>${esc(blend.text)}</p>
+    <p>${esc(blend.action)}</p>
+    <p>${actual ? (cmp.same >= 3 ? '알려 준 MBTI와 사주식 분류가 비슷한 쪽이에요. 그래도 가까운 관계와 일하는 자리에서 같은 모습일 필요는 없어요.' : '알려 준 MBTI와 사주식 분류가 갈리는 축이 있어요. 위의 생활 장면이 실제 나와 맞는지 비교해 보세요.') : '실제 MBTI를 입력하지 않아 두 분류가 같은지는 비교하지 않았어요.'}</p>
     <div class="kv"><div><small>잘 맞는 MBTI</small><b>${m1}, ${m2}</b></div><div><small>사주로 잘 맞는 기운</small><b>${EL[saju.yongsin.el].ko}(${EL[saju.yongsin.el].hanja}) 기운의 사람</b></div></div>
-    ${but(saju.dayMaster.caution.split('. ')[0] + '.')}`));
+    ${but(reading.intimate.risk)}<p class="reading-basis">${esc(blend.evidence)}. 성격 검사를 대신하는 분류는 아니에요.</p>`));
   return out;
 }
 
@@ -109,6 +115,7 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
   const name = input.name || '';
   const dm = saju.dayStem;
   const dmEl = STEMS[dm].el;
+  const reading = total.reading || buildReading(saju);
   const cards = [];
   const topic = TOPICS.find(t => t.id === input.topic) || TOPICS[4];
 
@@ -116,14 +123,19 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
   cards.push(card('cover', name ? `${name}님의 팔자` : '나의 팔자', `
     <div class="bigglyph" data-el="${dmEl}"><span class="g">${dm}</span>
       <span class="meta"><b>${NICK[dm]}</b><span>${STEMS[dm].ko}${EL[dmEl].ko} 일간</span><span>${STRENGTH_FRIENDLY[saju.strength.key]}</span></span></div>
-    <h2><em>${TRAIT[dm]}</em></h2>
+    <h2><em>${esc(reading.headline)}</em></h2>
     ${input.mbti ? `<p class="mbtitag"><b>${input.mbti}</b> · ${MBTI_ADJ[input.mbti]} ${DAY_NOUN[dm]}</p>` : ''}
     ${mini8(saju)}
-    <p>${esc(saju.dayMaster.text.split('. ').slice(1, 3).join('. '))}${face ? ` 얼굴은 ${esc(face.result.face.primary.shape)}의 ${face.result.face.primary.name}(${face.result.face.primary.hanja})이에요.` : ''}</p>
+    <p>${esc(reading.hook)}</p>
+    <p class="reading-basis">${esc(reading.evidence)}</p>
     <p class="hint">옆으로 넘겨 보세요 →</p>`));
 
   // 1-1. 60일주 · 격국 · 12운성
   for (const c of natureCards(saju)) cards.push(c);
+
+  // 같은 일주도 월주·시주가 다르면 달라지는 부분을 별도 카드로 보여 줍니다.
+  cards.push(card('birth-month', '태어난 달 × 나', `<h2>${esc(reading.outside.title)}</h2>${readingBody(reading.outside)}`));
+  cards.push(card('birth-hour', '태어난 시간 × 장기 계획', `<h2>${esc(reading.future.title)}</h2>${readingBody(reading.future)}`));
 
   // 2. 고른 질문: 심층 카드 4장
   const t = topic.id;
@@ -172,7 +184,7 @@ export function buildCards({ input, chart, saju, face, total, years, faceImage }
   // 10. 올해·내년 (올해를 이미 골랐으면 생략)
   if (t !== 'year') {
     cards.push(card('years', '올해와 내년', `<h2>${yr.year}년은 <em>${TONE[yr.tone]}</em></h2>
-      ${years.map(v => `<div class="yearrow"><div class="yh"><b>${v.year} ${v.stemKo}${v.branchKo}년</b>${toneTag(v.tone)}</div><p>${esc(v.text)}</p>${but(v.caution)}</div>`).join('')}`));
+      ${years.map(v => `<div class="yearrow"><div class="yh"><b>${v.year} ${v.stemKo}${v.branchKo}년</b>${toneTag(v.tone)}</div><p>${esc(v.text)}</p>${but(v.caution)}${v.action ? `<p class="reading-action">${esc(v.action)}</p>` : ''}${v.evidence ? `<p class="reading-basis">읽은 자리 · ${esc(v.evidence)}</p>` : ''}</div>`).join('')}`));
   }
 
   // 11. 대운 흐름

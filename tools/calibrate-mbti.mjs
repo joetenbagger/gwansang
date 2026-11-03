@@ -1,7 +1,7 @@
 // 사주→MBTI 점수 보정값(중앙값·척도) 계산: node tools/calibrate-mbti.mjs
-import { computePillars } from '../js/saju/calendar.js';
-import { analyzeSaju } from '../js/saju/analyze.js';
-import { rawScores, predictMbti, decorrelate, DECOR } from '../js/mbti.js';
+import { computePillars } from '../js/saju/calendar.js?v=17';
+import { analyzeSaju } from '../js/saju/analyze.js?v=17';
+import { rawScores, predictMbti, decorrelate, DECOR } from '../js/mbti.js?v=17';
 let seed = 11; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
 const N = +(process.argv[2] || 8000);
 const raws = { EI: [], SN: [], TF: [], JP: [] }; const types = {};

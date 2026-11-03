@@ -191,6 +191,10 @@ details.zi .opts { margin-top: 10px; }
 .card .lead { font-size: 17px; font-weight: 600; line-height: 1.6; }
 .card hr { border: 0; border-top: 1px dashed var(--rule); margin: 2px 0; width: 100%; }
 .card .hint { font-size: 13px; color: var(--ink-3); }
+.reading-action b { display: block; margin-bottom: 3px; color: var(--seal); font-size: 13px; }
+.reading-basis, .card .reading-basis { margin: 0; padding-top: 10px; border-top: 1px dashed var(--rule); font-size: 12px; line-height: 1.65; color: var(--ink-2); overflow-wrap: anywhere; }
+.block > .reading-action { margin-top: 12px; }
+.block > .reading-basis { margin-top: 12px; }
 .but { margin: 0; color: var(--ink-2); padding-left: 12px; border-left: 2px solid var(--seal); }
 .but span { color: var(--seal); font-weight: 700; margin-right: 5px; }
 .dots { display: flex; justify-content: center; gap: 5px; padding: 12px 0 2px; flex-wrap: wrap; }
